@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet  id="load-into-authors"  author="ladynin">
+        <loadData tableName="authors" file="authors.csv" encoding="UTF-8" relativeToChangelogFile="true">
+            <column name="full_name" header="full_name" type="string"/>
+        </loadData>
+    </changeSet>
+    <changeSet  id="load-into-genres"  author="ladynin">
+        <loadData tableName="genres" file="genres.csv" encoding="UTF-8" relativeToChangelogFile="true">
+            <column name="name" header="name" type="string"/>
+        </loadData>
+    </changeSet>
+    <changeSet  id="load-into-books"  author="ladynin">
+        <loadData tableName="books" file="books.csv" separator="|" encoding="UTF-8" relativeToChangelogFile="true">
+            <column name="title" header="title" type="string"/>
+            <column name="author_id" header="author_id" type="bigint"/>
+            <column name="genre_id" header="genre_id" type="bigint"/>
+        </loadData>
+    </changeSet>
+</databaseChangeLog>

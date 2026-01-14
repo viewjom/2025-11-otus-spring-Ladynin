@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-authors
+      author: ladynin
+      createTable:
+        tableName: authors
+        columns:
+          - column:
+              name: id
+              type: bigint
+              autoIncrement: true
+              constraints:
+                nullable: false
+                primaryKey: true
+                primaryKeyName: pk_author
+          - column:
+              name: full_name
+              type: varchar(255)
+  - changeSet:
+      id: create-table-genres
+      author: ladynin
+      createTable:
+        tableName: genres
+        columns:
+          - column:
+              name: id
+              type: bigint
+              autoIncrement: true
+              constraints:
+                nullable: false
+                primaryKey: true
+                primaryKeyName: pk_genre
+          - column:
+              name: name
+              type: varchar(255)
+  - changeSet:
+      id: create-table-books
+      author: ladynin
+      createTable:
+        tableName: books
+        columns:
+          - column:
+              name: id
+              type: bigint
+              autoIncrement: true
+              constraints:
+                nullable: false
+                primaryKey: true
+                primaryKeyName: pk_book
+          - column:
+              name: title
+              type: varchar(255)
+          - column:
+              name: author_id
+              type: bigint
+              constraints:
+                references: authors(id) on delete cascade
+                foreignKeyName: fk_author
+          - column:
+              name: genre_id
+              type: bigint
+              constraints:
+                references: genres(id) on delete cascade
+                foreignKeyName: fk_genre
