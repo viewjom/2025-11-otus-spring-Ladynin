@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.otus.hw.exceptions.EntityNotFoundException;
+import ru.otus.hw.models.Genre;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 
@@ -13,7 +14,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-import ru.otus.hw.models.Genre;
 
 @Repository
 public class JdbcBookRepository implements BookRepository {
