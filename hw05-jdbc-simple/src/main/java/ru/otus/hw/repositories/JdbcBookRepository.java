@@ -36,8 +36,8 @@ public class JdbcBookRepository implements BookRepository {
                                    a.id, a.full_name,
                                    g.id, g.name
                               from books b
-                              join authors a on a.id = b.author_id
-                              join genres g on g.id = b.genre_id
+                        inner join authors a on a.id = b.author_id
+                        inner join genres g on g.id = b.genre_id
                              where b.id = :id
                             """,
                     params, new BookRowMapper());
@@ -55,8 +55,8 @@ public class JdbcBookRepository implements BookRepository {
                                a.id, a.full_name,
                                g.id, g.name
                           from books b
-                          join authors a on a.id = b.author_id
-                          join genres g on g.id = b.genre_id
+                    inner join authors a on a.id = b.author_id
+                    inner join genres g on g.id = b.genre_id
                         """,
                 new BookRowMapper());
     }
@@ -77,12 +77,6 @@ public class JdbcBookRepository implements BookRepository {
                 delete books                     
                  where id = :id
                 """, params);
-        /*
-        if (result <= 0) {
-            throw new EntityNotFoundException(BOOK_NOT_FOUND);
-        }
-
-         */
     }
 
     private Book insert(Book book) {

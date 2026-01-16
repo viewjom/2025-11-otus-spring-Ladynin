@@ -27,8 +27,7 @@ public class JdbcAuthorRepository implements AuthorRepository {
 
     @Override
     public Optional<Author> findById(long id) {
-        final Map<String, Object> params = new HashMap<>(1);
-        params.put("id", id);
+        final Map<String, Object> params = Map.of("id", id);
         return Optional.of(jdbc.queryForObject("select id, full_name from authors where id = :id",
                 params, new AuthorRowMapper()));
     }
