@@ -1,0 +1,73 @@
+package ru.otus.hw.repositories;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.stereotype.Repository;
+import ru.otus.hw.models.Comment;
+
+@Repository
+public class JpaCommentRepository implements CommentRepository {
+
+    @PersistenceContext
+    private final EntityManager em;
+
+    public JpaCommentRepository(EntityManager em) {
+        this.em = em;
+    }
+
+    @Override
+    public Optional<Comment> findById(long id) {
+        try {
+            TypedQuery<Comment> query = em.createQuery(
+                    """ 
+                    select c 
+                      from Comment c
+                join fetch c.book b
+                join fetch b.author
+                join fetch b.genre
+                     where c.id = :id
+                    """,
+                    Comment.class);
+            query.setParameter("id", id);
+            return Optional.ofNullable(query.getSingleResult());
+        } catch (RuntimeException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<Comment> findAllForBook(Long bookId) {
+        TypedQuery<Comment> query = em.createQuery(
+                """ 
+                select c 
+                  from Comment c 
+            join fetch c.book b
+            join fetch b.author
+            join fetch b.genre            
+                 where b.id = :book_id
+                """,
+                Comment.class);
+        query.setParameter("book_id", bookId);
+        return query.getResultList();
+    }
+
+    @Override
+    public Comment save(Comment comment) {
+        if (comment.getId() == 0) {
+            em.persist(comment);
+            return comment;
+        }
+        return em.merge(comment);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        Comment comment = em.find(Comment.class, id);
+        if (comment != null) {
+            em.remove(comment);
+        }
+    }
+}
