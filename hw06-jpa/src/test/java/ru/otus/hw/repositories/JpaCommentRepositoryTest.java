@@ -16,11 +16,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий на основе Jpa для работы с комментариями")
 @DataJpaTest
-@Import({JpaCommentRepository.class})
+@Import({JpaCommentRepository.class, JpaBookRepository.class})
 class JpaCommentRepositoryTest {
 
     @Autowired
     private JpaCommentRepository jpaCommentRepository;
+
+    @Autowired
+    private JpaBookRepository jpaBookRepository;
 
     @Autowired
     private TestEntityManager tem;
@@ -64,7 +67,7 @@ class JpaCommentRepositoryTest {
     @DisplayName("должен сохранить новый комментарий к книге")
     @Test
     void shouldSaveNewComment() {
-        Book book = tem.find(Book.class, TEST_BOOK_ID);
+        Book book = jpaBookRepository.findById(TEST_BOOK_ID).get();
 
         Comment expectedComment = new Comment(0L, "ТЕСТ", book);
         jpaCommentRepository.save(expectedComment);
@@ -76,7 +79,7 @@ class JpaCommentRepositoryTest {
     @DisplayName("должен изменить комментарий")
     @Test
     void shouldUpdateComment() {
-        Book newBook = tem.find(Book.class, 3L);
+        Book newBook = jpaBookRepository.findById(3L).get();
 
         var expectedComment = jpaCommentRepository.save(
                 new Comment(TEST_COMMENT_ID, "ТЕСТ", newBook));
@@ -90,7 +93,8 @@ class JpaCommentRepositoryTest {
     @Test
     void shouldDeleteComment() {
 
-        Comment delComment = tem.find(Comment.class, TEST_COMMENT_ID);
+      //  Comment delComment = tem.find(Comment.class, TEST_COMMENT_ID);
+        Comment delComment = jpaCommentRepository.findById(TEST_COMMENT_ID).get();
 
         assertThat(delComment).isNotNull();
         jpaCommentRepository.deleteById(TEST_COMMENT_ID);

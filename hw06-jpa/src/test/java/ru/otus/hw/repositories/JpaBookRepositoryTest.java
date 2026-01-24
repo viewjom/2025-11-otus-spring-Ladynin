@@ -1,5 +1,7 @@
 package ru.otus.hw.repositories;
 
+import java.util.Optional;
+import org.assertj.core.api.OptionalAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,11 +20,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий на основе Jpa для работы с книгами ")
 @DataJpaTest
-@Import({JpaBookRepository.class, JpaGenreRepository.class})
+@Import({JpaBookRepository.class, JpaAuthorRepository.class, JpaGenreRepository.class})
 class JpaBookRepositoryTest {
 
     @Autowired
     private JpaBookRepository jpaBookRepository;
+
+    @Autowired
+    private JpaAuthorRepository jpaAuthorRepository;
+
+    @Autowired
+    private JpaGenreRepository jpaGenreRepository;
 
     @Autowired
     private TestEntityManager tem;
@@ -61,9 +69,8 @@ class JpaBookRepositoryTest {
     @DisplayName("должен сохранять новую книгу")
     @Test
     void shouldSaveNewBook() {
-
-        Author author = tem.find(Author.class, 1L);
-        Genre genre = tem.find(Genre.class, 1L);
+        Author author = jpaAuthorRepository.findById(1L).get();
+        Genre genre = jpaGenreRepository.findById(1L).get();
         var newBook = new Book(0, "BookTitle_10500",
                 author,
                 genre);
@@ -83,8 +90,8 @@ class JpaBookRepositoryTest {
     @DisplayName("должен сохранять измененную книгу")
     @Test
     void shouldSaveUpdatedBook() {
-        Author author = tem.find(Author.class, 2L);
-        Genre genre = tem.find(Genre.class, 2L);
+        Author author = jpaAuthorRepository.findById(1L).get();
+        Genre genre = jpaGenreRepository.findById(1L).get();
         var expectedBook = new Book(1L, "BookTitle_10500", author, genre);
 
         assertThat(jpaBookRepository.findById(expectedBook.getId()))
@@ -107,12 +114,13 @@ class JpaBookRepositoryTest {
     @Test
     void shouldDeleteBook() {
 
-        Book delBook = tem.find(Book.class, 1L);
+        //Book delBook = tem.find(Book.class, 1L);
+        Book delBook = jpaBookRepository.findById(1L).get();
 
         assertThat(delBook).isNotNull();
         jpaBookRepository.deleteById(1L);
-        Book emptyBook = tem.find(Book.class, 1L);
-        assertThat(emptyBook).isNull();
+        Optional<Book> emptyBook = jpaBookRepository.findById(1L);
+        assertThat(emptyBook).isEmpty();
     }
 
     private List<Book> getDbBooks() {

@@ -1,11 +1,14 @@
 package ru.otus.hw.repositories;
 
+import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
+import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
 
 @Repository
@@ -21,18 +24,16 @@ public class JpaCommentRepository implements CommentRepository {
     @Override
     public Optional<Comment> findById(long id) {
         try {
-            TypedQuery<Comment> query = em.createQuery(
-                    """ 
-                    select c 
-                      from Comment c
-                join fetch c.book b
-                join fetch b.author
-                join fetch b.genre
-                     where c.id = :id
-                    """,
-                    Comment.class);
-            query.setParameter("id", id);
-            return Optional.ofNullable(query.getSingleResult());
+            EntityGraph<?> entityGraph = em
+                    .createEntityGraph(Book.class);
+            entityGraph.addAttributeNodes("author");
+            entityGraph.addAttributeNodes("genre");
+
+            Comment comment = em.find(Comment.class, id,
+                    Collections.singletonMap(
+                            "javax.persistence.loadgraph",
+                            entityGraph));
+            return Optional.ofNullable(comment);
         } catch (RuntimeException e) {
             return Optional.empty();
         }
@@ -43,11 +44,8 @@ public class JpaCommentRepository implements CommentRepository {
         TypedQuery<Comment> query = em.createQuery(
                 """ 
                 select c 
-                  from Comment c 
-            join fetch c.book b
-            join fetch b.author
-            join fetch b.genre            
-                 where b.id = :book_id
+                  from Comment c                               
+                 where c.book.id = :book_id
                 """,
                 Comment.class);
         query.setParameter("book_id", bookId);
