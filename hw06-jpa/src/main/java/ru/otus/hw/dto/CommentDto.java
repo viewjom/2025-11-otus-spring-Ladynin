@@ -1,9 +1,12 @@
 package ru.otus.hw.dto;
 
+import lombok.Getter;
+import lombok.Setter;
 import ru.otus.hw.converters.BookConverter;
 import ru.otus.hw.models.Book;
 
-
+@Getter
+@Setter
 public class CommentDto {
     private final BookConverter bookConverter;
 
@@ -17,32 +20,8 @@ public class CommentDto {
         this.bookConverter = bookConverter;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public Book getBook() {
-        return book;
-    }
-
-    public void setBook(Book book) {
-        this.book = book;
-    }
-
     public String commentToString() {
-        return "Id: %d, Text: %s, book: {%s}"
+        return "Id: %d, Text: %s, book_id: {%s}"
                 .formatted(
                         this.id,
                         this.text,

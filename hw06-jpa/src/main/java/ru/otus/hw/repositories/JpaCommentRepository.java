@@ -24,15 +24,14 @@ public class JpaCommentRepository implements CommentRepository {
     @Override
     public Optional<Comment> findById(long id) {
         try {
+            Comment comment = em.find(Comment.class, id);
             EntityGraph<?> entityGraph = em
-                    .createEntityGraph(Book.class);
-            entityGraph.addAttributeNodes("author");
-            entityGraph.addAttributeNodes("genre");
-
-            Comment comment = em.find(Comment.class, id,
+                    .createEntityGraph("book-graph");
+            em.find(Book.class, comment.getBook().getId(),
                     Collections.singletonMap(
                             "javax.persistence.loadgraph",
                             entityGraph));
+
             return Optional.ofNullable(comment);
         } catch (RuntimeException e) {
             return Optional.empty();
@@ -41,14 +40,21 @@ public class JpaCommentRepository implements CommentRepository {
 
     @Override
     public List<Comment> findAllForBook(Long bookId) {
+        EntityGraph<?> entityGraph = em
+                .createEntityGraph("book-graph");
+        Book book = em.find(Book.class, bookId,
+                Collections.singletonMap(
+                        "javax.persistence.loadgraph",
+                        entityGraph));
+
         TypedQuery<Comment> query = em.createQuery(
                 """ 
-                select c 
-                  from Comment c                               
-                 where c.book.id = :book_id
-                """,
+                        select c
+                          from Comment c                   
+                         where c.book = :book
+                        """,
                 Comment.class);
-        query.setParameter("book_id", bookId);
+        query.setParameter("book", book);
         return query.getResultList();
     }
 

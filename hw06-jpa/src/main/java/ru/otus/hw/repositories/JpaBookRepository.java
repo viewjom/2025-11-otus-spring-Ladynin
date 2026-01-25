@@ -28,9 +28,7 @@ public class JpaBookRepository implements BookRepository {
     public Optional<Book> findById(long id) {
         try {
             EntityGraph<?> entityGraph = em
-                    .createEntityGraph(Book.class);
-            entityGraph.addAttributeNodes("author");
-            entityGraph.addAttributeNodes("genre");
+                    .createEntityGraph("book-graph");
             Book book = em.find(Book.class, id,
                     Collections.singletonMap(
                             "javax.persistence.loadgraph",
