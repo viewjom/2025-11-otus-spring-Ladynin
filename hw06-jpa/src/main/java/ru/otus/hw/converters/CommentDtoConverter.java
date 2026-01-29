@@ -14,7 +14,6 @@ public class CommentDtoConverter {
         CommentDto dto = new CommentDto(bookConverter);
         dto.setId(comment.getId());
         dto.setText(comment.getText());
-        dto.setBook(comment.getBook());
         return dto;
     }
 }

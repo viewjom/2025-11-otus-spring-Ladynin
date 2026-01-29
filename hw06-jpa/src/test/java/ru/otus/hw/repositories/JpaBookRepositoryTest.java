@@ -1,7 +1,6 @@
 package ru.otus.hw.repositories;
 
 import java.util.Optional;
-import org.assertj.core.api.OptionalAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,22 +19,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий на основе Jpa для работы с книгами ")
 @DataJpaTest
-@Import({JpaBookRepository.class, JpaAuthorRepository.class, JpaGenreRepository.class})
+@Import({JpaBookRepository.class})
 class JpaBookRepositoryTest {
 
     @Autowired
     private JpaBookRepository jpaBookRepository;
 
     @Autowired
-    private JpaAuthorRepository jpaAuthorRepository;
-
-    @Autowired
-    private JpaGenreRepository jpaGenreRepository;
-
-    @Autowired
     private TestEntityManager tem;
 
     private List<Book> dbBooks;
+
+    private static final long TEST_BOOK_ID = 1L;
 
     @BeforeEach
     void setUp() {
@@ -45,11 +40,10 @@ class JpaBookRepositoryTest {
     @DisplayName("должен загружать книгу по id")
     @Test
     void shouldReturnCorrectBookById() {
-
         var expectedBooks = getDbBooks();
-
         for (Book expectedBook : expectedBooks) {
             var actualBook = jpaBookRepository.findById(expectedBook.getId());
+
             assertThat(actualBook).isPresent()
                     .get()
                     .isEqualTo(expectedBook);
@@ -59,8 +53,8 @@ class JpaBookRepositoryTest {
     @DisplayName("должен загружать список всех книг")
     @Test
     void shouldReturnCorrectBooksList() {
-        var actualBooks = jpaBookRepository.findAll();
         var expectedBooks = dbBooks;
+        var actualBooks = jpaBookRepository.findAll();
 
         assertThat(actualBooks).containsExactlyElementsOf(expectedBooks);
         actualBooks.forEach(System.out::println);
@@ -69,55 +63,33 @@ class JpaBookRepositoryTest {
     @DisplayName("должен сохранять новую книгу")
     @Test
     void shouldSaveNewBook() {
-        Author author = jpaAuthorRepository.findById(1L).get();
-        Genre genre = jpaGenreRepository.findById(1L).get();
-        var newBook = new Book(0, "BookTitle_10500",
-                author,
-                genre);
+        var expectedBook = new Book(0L, "Test"
+                , new Author(0L, "Test")
+                , new Genre(0L, "Test"));
+        var actualBooks = jpaBookRepository.save(expectedBook);
 
-        var returnedBook = jpaBookRepository.save(newBook);
-
-        assertThat(returnedBook).isNotNull()
-                .matches(book -> book.getId() > 0)
-                .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(newBook);
-
-        assertThat(jpaBookRepository.findById(returnedBook.getId()))
-                .isPresent()
-                .get()
-                .isEqualTo(returnedBook);
+        assertThat(actualBooks).isEqualTo(expectedBook);
     }
 
     @DisplayName("должен сохранять измененную книгу")
     @Test
     void shouldSaveUpdatedBook() {
-        Author author = jpaAuthorRepository.findById(1L).get();
-        Genre genre = jpaGenreRepository.findById(1L).get();
-        var expectedBook = new Book(1L, "BookTitle_10500", author, genre);
+        var book = tem.find(Book.class, TEST_BOOK_ID);
+        book.setAuthor(new Author(0L, "Test"));
+        book.setGenre(new Genre(0L, "Test"));
+        book.setTitle("Test");
+        var actualBooks = jpaBookRepository.save(book);
+        var expectedBook = tem.find(Book.class, TEST_BOOK_ID);
 
-        assertThat(jpaBookRepository.findById(expectedBook.getId()))
-                .isPresent()
-                .get()
-                .isNotEqualTo(expectedBook);
-
-        var returnedBook = jpaBookRepository.save(expectedBook);
-        assertThat(returnedBook).isNotNull()
-                .matches(book -> book.getId() > 0)
-                .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
-
-        assertThat(jpaBookRepository.findById(returnedBook.getId()))
-                .isPresent()
-                .get()
-                .isEqualTo(returnedBook);
+        assertThat(actualBooks).isEqualTo(expectedBook);
     }
 
     @DisplayName("должен удалять книгу по id ")
     @Test
     void shouldDeleteBook() {
-
-        //Book delBook = tem.find(Book.class, 1L);
-        Book delBook = jpaBookRepository.findById(1L).get();
-
+        Book delBook = tem.find(Book.class, 1L);
         assertThat(delBook).isNotNull();
+
         jpaBookRepository.deleteById(1L);
         Optional<Book> emptyBook = jpaBookRepository.findById(1L);
         assertThat(emptyBook).isEmpty();
