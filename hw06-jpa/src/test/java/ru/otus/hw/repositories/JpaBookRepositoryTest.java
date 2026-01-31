@@ -1,6 +1,5 @@
 package ru.otus.hw.repositories;
 
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -91,8 +90,8 @@ class JpaBookRepositoryTest {
         assertThat(delBook).isNotNull();
 
         jpaBookRepository.deleteById(1L);
-        Optional<Book> emptyBook = jpaBookRepository.findById(1L);
-        assertThat(emptyBook).isEmpty();
+        Book emptyBook = tem.find(Book.class, 1L);
+        assertThat(emptyBook).isNull();
     }
 
     private List<Book> getDbBooks() {
