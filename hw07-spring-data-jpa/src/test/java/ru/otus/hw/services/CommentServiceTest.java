@@ -13,8 +13,6 @@ import ru.otus.hw.converters.BookConverter;
 import ru.otus.hw.converters.CommentDtoConverter;
 import ru.otus.hw.converters.GenreConverter;
 import ru.otus.hw.dto.CommentDto;
-import ru.otus.hw.repositories.BookRepository;
-import ru.otus.hw.repositories.CommentRepository;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 

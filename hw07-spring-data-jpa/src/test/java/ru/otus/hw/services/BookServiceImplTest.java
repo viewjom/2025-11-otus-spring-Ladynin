@@ -13,9 +13,6 @@ import ru.otus.hw.converters.GenreConverter;
 import ru.otus.hw.models.Book;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import java.util.List;
-import ru.otus.hw.repositories.AuthorRepository;
-import ru.otus.hw.repositories.BookRepository;
-import ru.otus.hw.repositories.GenreRepository;
 
 @DisplayName("Сервис для работы с книгами должен")
 @DataJpaTest
