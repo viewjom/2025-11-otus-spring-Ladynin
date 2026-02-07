@@ -18,16 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatList;
 class BookRepositoryTest {
 
     @Autowired
-    private AuthorRepository authorRepository;
-
-    @Autowired
-    private GenreRepository genreRepository;
-
-    @Autowired
     private BookRepository bookRepository;
-
-    @Autowired
-    private CommentRepository commentRepository;
 
     @Autowired
     private MongoTemplate mt;
@@ -36,7 +27,7 @@ class BookRepositoryTest {
 
     @BeforeEach
     void init() {
-        Generator.initBooks(authorRepository, genreRepository, bookRepository, commentRepository);
+        Generator.initBooks(mt);
     }
 
     @DisplayName("должен загружать книгу по id")

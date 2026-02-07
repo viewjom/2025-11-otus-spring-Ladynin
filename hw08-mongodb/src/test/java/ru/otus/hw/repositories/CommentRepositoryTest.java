@@ -19,15 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CommentRepositoryTest {
 
     @Autowired
-    private AuthorRepository authorRepository;
-
-    @Autowired
-    private GenreRepository genreRepository;
-
-    @Autowired
-    private BookRepository bookRepository;
-
-    @Autowired
     private CommentRepository commentRepository;
 
     @Autowired
@@ -39,7 +30,7 @@ class CommentRepositoryTest {
 
     @BeforeEach
     void init() {
-        Generator.initBooks(authorRepository, genreRepository, bookRepository, commentRepository);
+        Generator.initBooks(mt);
     }
 
     @DisplayName("должен загружать комментарий по id")
@@ -72,7 +63,8 @@ class CommentRepositoryTest {
         var book = new Book(null, "Test"
                 , new Author(null, "Test")
                 , new Genre(null, "Test"));
-        bookRepository.save(book);
+        mt.save(book);
+        //bookRepository.save(book);
         Comment comment = new Comment(null, "ТЕСТ", book);
         Comment actualComment = commentRepository.save(comment);
         Comment expectedComment = mt.findById(actualComment.getId(), Comment.class);
@@ -86,7 +78,8 @@ class CommentRepositoryTest {
         var book = new Book(null, "Test"
                 , new Author(null, "Test")
                 , new Genre(null, "Test"));
-        bookRepository.save(book);
+        mt.save(book);
+        //bookRepository.save(book);
         Comment comment = mt.findById("3", Comment.class);
         comment.setText("Test");
         comment.setBook(book);

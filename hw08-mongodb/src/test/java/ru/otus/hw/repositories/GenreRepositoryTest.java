@@ -25,9 +25,9 @@ class GenreRepositoryTest {
 
     @BeforeEach
     void init() {
-        genreRepository.save(new Genre("1", "Genre_1"));
-        genreRepository.save(new Genre("2", "Genre_2"));
-        genreRepository.save(new Genre("3", "Genre_3"));
+        mt.save(new Genre("1", "Genre_1"));
+        mt.save(new Genre("2", "Genre_2"));
+        mt.save(new Genre("3", "Genre_3"));
     }
 
     @DisplayName("должен загружать жанр по id")

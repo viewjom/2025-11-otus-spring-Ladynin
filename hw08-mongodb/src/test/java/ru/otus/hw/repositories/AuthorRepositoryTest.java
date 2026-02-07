@@ -25,9 +25,9 @@ class AuthorRepositoryTest {
 
     @BeforeEach
     void init() {
-        authorRepository.save(new Author("1", "Author_1"));
-        authorRepository.save(new Author("2", "Author_2"));
-        authorRepository.save(new Author("3", "Author_3"));
+        mt.save(new Author("1", "Author_1"));
+        mt.save(new Author("2", "Author_2"));
+        mt.save(new Author("3", "Author_3"));
     }
 
     @DisplayName("должен загружать автора по id")
