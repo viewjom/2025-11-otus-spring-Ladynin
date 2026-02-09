@@ -6,6 +6,7 @@ import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
+import ru.otus.hw.repositories.CommentRepository;
 import ru.otus.hw.repositories.GenreRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,8 @@ public class BookServiceImpl implements BookService {
     private final GenreRepository genreRepository;
 
     private final BookRepository bookRepository;
+
+    private final CommentRepository commentRepository;
 
     @Override
     public Optional<Book> findById(String id) {
@@ -46,6 +49,7 @@ public class BookServiceImpl implements BookService {
     @Transactional
     @Override
     public void deleteById(String id) {
+        commentRepository.deleteAllByBookId(id);
         bookRepository.deleteById(id);
     }
 
