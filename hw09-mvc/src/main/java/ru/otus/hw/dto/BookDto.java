@@ -13,7 +13,7 @@ public class BookDto {
     private long id;
 
     @NotBlank(message = "The title of book can't be empty")
-    @Size(min = 2, max = 10, message = "The length of book must be from 2 to 10 symbols")
+    @Size(min = 2, max = 20, message = "The length of book must be from 2 to 20 symbols")
     private String title;
 
     private AuthorDto authorDto;
