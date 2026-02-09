@@ -10,6 +10,11 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class BookDto {
+
+    public static final BookDto BOOK_DTO_EMPTY = new BookDto(0L, null,
+            new AuthorDto(0L, null),
+            new GenreDto(0L, null));
+
     private long id;
 
     @NotBlank(message = "The title of book can't be empty")

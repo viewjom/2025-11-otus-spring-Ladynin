@@ -15,6 +15,7 @@ public class CommentController {
 
     private final CommentService commentService;
 
+    //http://localhost:8080/comment?id=1
     @GetMapping("/comment")
     public String findAllForBook(@RequestParam("id") long id, Model model) {
         List<CommentDto> comments = commentService.findAllByBookId(id);

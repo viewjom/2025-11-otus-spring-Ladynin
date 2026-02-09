@@ -14,6 +14,7 @@ public class GenreController {
 
     private final GenreService genreService;
 
+    //http://localhost:8080/genre
     @GetMapping({"/genre", "/genres"})
     public String findAllGenres(Model model) {
         List<GenreDto> genres = genreService.findAll();

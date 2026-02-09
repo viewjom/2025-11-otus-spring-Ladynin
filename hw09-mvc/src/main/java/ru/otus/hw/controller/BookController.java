@@ -28,7 +28,7 @@ public class BookController {
 
     private final BookDtoConverter bookConverter;
 
-
+    //http://localhost:8080/book
     @GetMapping({"/", "/book", "/books"})
     public String findAllBooks(Model model) {
         List<BookDto> books = bookService.findAll();
@@ -39,9 +39,8 @@ public class BookController {
     @GetMapping("/bookEdit")
     public String editBook(@RequestParam(value = "id", required = false) Long id,
                            Model model) {
-
         if (id == null) {
-            model.addAttribute("book", bookConverter.getDto());
+            model.addAttribute("book", BookDto.BOOK_DTO_EMPTY);
         } else {
             BookDto bookDto = bookService.findById(id);
             model.addAttribute("book", bookDto);

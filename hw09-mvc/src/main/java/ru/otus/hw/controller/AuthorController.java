@@ -10,10 +10,11 @@ import ru.otus.hw.services.AuthorService;
 
 @RequiredArgsConstructor
 @Controller
-public class AuthorCommands {
+public class AuthorController {
 
     private final AuthorService authorService;
 
+    //http://localhost:8080/author
     @GetMapping({"/author", "/authors"})
     public String findAllAuthors(Model model) {
         List<AuthorDto> authorList = authorService.findAll();
