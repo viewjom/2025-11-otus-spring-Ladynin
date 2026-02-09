@@ -3,7 +3,7 @@ package ru.otus.hw.services;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.otus.hw.converters.GenreConverter;
+import ru.otus.hw.converters.GenreDtoConverter;
 import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.repositories.GenreRepository;
 
@@ -15,7 +15,7 @@ public class GenreServiceImpl implements GenreService {
 
     private final GenreRepository genreRepository;
 
-    private final GenreConverter genreConverter;
+    private final GenreDtoConverter genreConverter;
 
     @Override
     public List<GenreDto> findAll() {

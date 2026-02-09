@@ -8,14 +8,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.otus.hw.converters.AuthorConverter;
-import ru.otus.hw.converters.BookConverter;
-import ru.otus.hw.converters.GenreConverter;
+import ru.otus.hw.converters.AuthorDtoConverter;
+import ru.otus.hw.converters.BookDtoConverter;
+import ru.otus.hw.converters.GenreDtoConverter;
 import ru.otus.hw.dto.*;
-import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.AuthorServiceImpl;
 import ru.otus.hw.services.BookService;
-import ru.otus.hw.services.GenreService;
 import ru.otus.hw.services.GenreServiceImpl;
 import java.util.List;
 
@@ -29,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("Тестирование контроллера книг")
 @WebMvcTest(BookController.class)
-@Import({BookConverter.class, AuthorConverter.class, GenreConverter.class})
+@Import({BookDtoConverter.class, AuthorDtoConverter.class, GenreDtoConverter.class})
 class BookControllerTest {
 
     private static final long TEST_ID = 1L;

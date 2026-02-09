@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.otus.hw.converters.BookConverter;
+import ru.otus.hw.converters.BookDtoConverter;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.dto.BookDto;
@@ -24,7 +24,7 @@ public class BookController {
 
     private final GenreService genreService;
 
-    private final BookConverter bookConverter;
+    private final BookDtoConverter bookConverter;
 
 
     @GetMapping({"/", "/book", "/books"})

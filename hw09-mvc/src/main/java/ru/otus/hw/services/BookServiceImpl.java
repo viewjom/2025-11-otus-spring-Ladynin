@@ -3,7 +3,7 @@ package ru.otus.hw.services;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.otus.hw.converters.BookConverter;
+import ru.otus.hw.converters.BookDtoConverter;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
@@ -23,7 +23,7 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
 
-    private final BookConverter bookConverter;
+    private final BookDtoConverter bookConverter;
 
     @Override
     public BookDto findById(long id) {

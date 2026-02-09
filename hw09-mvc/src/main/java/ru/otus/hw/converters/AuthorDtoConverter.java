@@ -5,7 +5,7 @@ import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.models.Author;
 
 @Component
-public class AuthorConverter {
+public class AuthorDtoConverter {
     public AuthorDto getDto(Author author) {
         return new AuthorDto(author.getId(), author.getFullName());
     }

@@ -9,10 +9,10 @@ import ru.otus.hw.models.Genre;
 
 @RequiredArgsConstructor
 @Component
-public class BookConverter {
-    private final AuthorConverter authorConverter;
+public class BookDtoConverter {
+    private final AuthorDtoConverter authorConverter;
 
-    private final GenreConverter genreConverter;
+    private final GenreDtoConverter genreConverter;
 
     public BookDto getDto(Book book) {
         return new BookDto(book.getId(), book.getTitle(),
