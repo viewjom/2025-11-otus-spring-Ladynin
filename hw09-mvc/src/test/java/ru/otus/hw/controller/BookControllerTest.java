@@ -89,9 +89,9 @@ class BookControllerTest {
         verify(bookService, times(1)).update(TEST_ID, "Test", TEST_ID, TEST_ID);
     }
 
-    @DisplayName("должен сохранять измененную книгу")
+    @DisplayName("должен удалять книгу по id ")
     @Test
-    void shouldCreatePersonAndRedirectToContextPath() throws Exception {
+    void shouldDeletePersonAndRedirectToContextPath() throws Exception {
         BookDto expectedBookDto = getTestListBookDto().get(0);
         when(bookService.findById(TEST_ID)).thenReturn(expectedBookDto);
 
