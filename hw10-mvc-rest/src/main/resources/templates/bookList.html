@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>List of all books</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .books {
+            border: 1px solid steelblue;
+            width: 800px;
+            border-collapse: collapse;
+        }
+
+        .books tr td, th {
+            padding: 5px;
+            border: 1px solid steelblue;
+        }
+
+        .books td:last-child, td:first-child {
+            width: 50px;
+        }
+    </style>
+
+</head>
+<body>
+<h3>Books:</h3>
+<a href = /bookEdit>Add new</a>
+<table id='book' class="books">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Genre</th>
+        <th>Comments</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<script>
+    function fillTable() {
+        fetch('/api/books')
+            .then(res => res.json())
+            .then(
+                data => {
+                    data.forEach(({id, title, authorDto, genreDto}) => {
+                        const temp = `<tr><td>${id}</td><td>${title}</td>
+                                          <td>${authorDto.fullName}</td>
+                                          <td>${genreDto.name}</td>
+                                          <td>
+                                              <a href=/comment?id=${id}>Comments</a>
+                                          </td>
+                                          <td>
+                                              <a href=/bookEdit?id=${id}>
+                                                <button type="button">Edit</button>
+                                              </a>
+                                              <button type="submit" onclick="deleteBook(${id})">Delete</button>
+                                          </td>
+                                      </tr>`
+                        book.insertAdjacentHTML('beforeend', temp)
+                    })
+                })
+    }
+    function deleteBook(idBook) {
+        fetch("api/book/" + idBook, {
+            method: 'DELETE',
+        })
+            .then(() => row.remove())
+        window.location.reload();
+    }
+    window.addEventListener('load', fillTable)
+</script>
+</body>
+</html>
