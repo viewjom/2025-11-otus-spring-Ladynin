@@ -1,6 +1,5 @@
 package ru.otus.hw.controller.rest;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +25,7 @@ public class BookRestController {
     }
 
     @PostMapping("/api/book")
-    public ResponseEntity<BookDto> addBook(@Valid @RequestBody BookDto bookDto) {
+    public ResponseEntity<BookDto> addBook(@RequestBody BookDto bookDto) {
         var savedBookDto = bookService.update(bookDto.getId(),
                 bookDto.getTitle(),
                 bookDto.getAuthorDto().getId(),
