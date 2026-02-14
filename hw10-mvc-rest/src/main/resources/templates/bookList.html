@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
     <title>List of all books</title>
@@ -22,13 +21,24 @@
         .books td:last-child, td:first-child {
             width: 50px;
         }
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+        .row {
+            margin-top: 10px;
+        }
     </style>
 
 </head>
 <body>
-<h3>Books:</h3>
-<a href = /bookEdit>Add new</a>
-<table id='book' class="books">
+<h3 id="pageTitle">Books:</h3>
+<a id="bookAdd" href="#" onclick="addBook()">Add new</a>
+<table id='bookTable' class="books">
     <thead>
     <tr>
         <th>ID</th>
@@ -41,8 +51,52 @@
     </thead>
     <tbody></tbody>
 </table>
+
+<!-- Book edition -->
+<form id="bookEditForm">
+    <h3>Book Info:</h3>
+
+    <div class="row">
+        <label for="id-input">ID:</label>
+        <input id="id-input" type="text" readonly="readonly"/>
+    </div>
+
+    <div class="row">
+        <label for="book-title-input">Title:</label>
+        <input id="book-title-input" name="title" type="text"/>
+    </div>
+
+    <div class="row">
+        <label for="author-select">Author:</label>
+        <select id="author-select" aria-label="Default select example">
+            <option selected>Выберите автора</option>
+            <option id="1" value="1" >Author_1</option>
+            <option id="2" value="2">Author_2</option>
+            <option id="3" value="3">Author_3</option>
+        </select>
+    </div>
+    <div class="row">
+        <label for="genre-select">Genre:</label>
+        <select id="genre-select" aria-label="Default select example">
+            <option selected>Выберите жанр</option>
+            <option value="1">Genre_1</option>
+            <option value="2">Genre_2</option>
+            <option value="3">Genre_3</option>
+        </select>
+    </div>
+
+    <div class="row">
+        <button type="button" onclick="saveBook()">Save</button>
+        <a href="/">
+            <button type="button">Cancel</button>
+        </a>
+
+    </div>
+</form>
+
 <script>
     function fillTable() {
+        document.getElementById("bookEditForm").hidden = true
         fetch('/api/books')
             .then(res => res.json())
             .then(
@@ -55,23 +109,83 @@
                                               <a href=/comment?id=${id}>Comments</a>
                                           </td>
                                           <td>
-                                              <a href=/bookEdit?id=${id}>
-                                                <button type="button">Edit</button>
-                                              </a>
+                                          <button type="submit" onclick="editBook(${id})">Edit</button>
                                               <button type="submit" onclick="deleteBook(${id})">Delete</button>
                                           </td>
                                       </tr>`
-                        book.insertAdjacentHTML('beforeend', temp)
+                        bookTable.insertAdjacentHTML('beforeend', temp)
                     })
                 })
     }
+
     function deleteBook(idBook) {
-        fetch("api/book/" + idBook, {
+        fetch("api/books/" + idBook, {
             method: 'DELETE',
         })
             .then(() => row.remove())
-        window.location.reload();
+            .finally(() => {window.location.reload()})
     }
+
+    function editBook(idBook) {
+        fetch("/api/books/" + idBook)
+            .then(res => res.json())
+            .then((data) =>
+            {
+                bookTableHidden()
+                document.getElementById("id-input").value = data.id;
+                document.getElementById("book-title-input").value = data.title;
+                document.getElementById("author-select").value = data.authorDto.id
+                document.getElementById("genre-select").value = data.genreDto.id
+            })
+    }
+
+    function addBook() {
+        bookTableHidden()
+        document.getElementById("id-input").value = "0";
+    }
+
+    function saveBook() {
+        const bookTitleId = document.getElementById("id-input")
+        const bookTitleInput = document.getElementById("book-title-input")
+        if (bookTitleInput.value === "") {
+            alert("Заполните Заголовок");
+            return;
+        }
+        const authorInput = document.getElementById("author-select")
+        if (authorInput.value === "Выберите автора") {
+            alert("Выберите автора");
+            return;
+        }
+        const genreInput = document.getElementById("genre-select")
+        if (genreInput.value === "Выберите жанр") {
+            alert("Выберите жанр");
+            return;
+        }
+        const book = {
+            id: bookTitleId.value,
+            title: bookTitleInput.value,
+            authorDto: {id: authorInput.value},
+            genreDto: {id: genreInput.value}
+        }
+        fetch("/api/books", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(book)
+        })
+            .then(rawResponse => rawResponse.json())
+            .finally(() => {window.location.href = '/books'})
+    }
+
+    function bookTableHidden() {
+        document.getElementById("bookTable").hidden = true;
+        document.getElementById("bookAdd").hidden = true;
+        document.getElementById("pageTitle").hidden = true;
+        document.getElementById("bookEditForm").hidden = false;
+    }
+
     window.addEventListener('load', fillTable)
 </script>
 </body>

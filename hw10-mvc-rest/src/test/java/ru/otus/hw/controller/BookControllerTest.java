@@ -68,7 +68,7 @@ class BookControllerTest {
                    expectedBookDto.getGenreDto().getId())).thenReturn(expectedBookDto);
         String expectedResult = mapper.writeValueAsString(expectedBookDto);
 
-        mvc.perform(post("/api/book").contentType(APPLICATION_JSON)
+        mvc.perform(post("/api/books").contentType(APPLICATION_JSON)
                         .content(expectedResult))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedResult));
@@ -80,7 +80,7 @@ class BookControllerTest {
         BookDto expectedBookDto = getTestListBookDto().get(0);
         String expectedResult = mapper.writeValueAsString(expectedBookDto);
 
-        mvc.perform(delete("/api/book/" + TEST_ID).contentType(APPLICATION_JSON)
+        mvc.perform(delete("/api/books/" + TEST_ID).contentType(APPLICATION_JSON)
                         .content(expectedResult))
                 .andExpect(status().isOk());
     }

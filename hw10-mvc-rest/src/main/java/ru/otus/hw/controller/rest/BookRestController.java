@@ -24,7 +24,12 @@ public class BookRestController {
         return bookService.findAll();
     }
 
-    @PostMapping("/api/book")
+    @GetMapping("/api/books/{id}")
+    public BookDto getById(@PathVariable long id) {
+        return bookService.findById(id);
+    }
+
+    @PostMapping("/api/books")
     public ResponseEntity<BookDto> addBook(@RequestBody BookDto bookDto) {
         var savedBookDto = bookService.update(bookDto.getId(),
                 bookDto.getTitle(),
@@ -33,7 +38,7 @@ public class BookRestController {
         return ResponseEntity.ok(savedBookDto);
     }
 
-    @DeleteMapping("/api/book/{id}")
+    @DeleteMapping("/api/books/{id}")
     public void delete(@PathVariable long id) {
         bookService.deleteById(id);
     }
