@@ -83,9 +83,13 @@
         fetch("api/books/" + idBook, {
             method: 'DELETE',
         })
-            .then(() => {row.remove()})
+            .then(() => {
+                row.remove()
+            })
             .then(() => {
                 evt.preventDefault();
+            })
+            .then(() => {
                 window.location.reload()
             })
     }
