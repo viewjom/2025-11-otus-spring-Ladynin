@@ -47,7 +47,7 @@ class BookControllerTest {
 
     @DisplayName("должен загружать список всех книг")
     @Test
-    void shouldRenderListPageWithCorrectViewAndModelAttributes() throws Exception {
+    void shouldReturnCorrectBooksList() throws Exception {
         List<BookDto> expectedBookDtoList = getTestListBookDto();
 
         when(bookService.findAll())
@@ -58,9 +58,23 @@ class BookControllerTest {
                 .andExpect(content().json(mapper.writeValueAsString(expectedBookDtoList)));
     }
 
+    @DisplayName("должен загружать книгу по id")
+    @Test
+    void shouldRenderListPageWithCorrectViewAndModelAttributes() throws Exception {
+        BookDto expectedBookDto = getTestListBookDto()
+                .stream().filter(v -> v.getId() == TEST_ID).toList().get(0);
+
+        when(bookService.findById(TEST_ID))
+                .thenReturn(expectedBookDto);
+
+        mvc.perform(get("/api/books/" + TEST_ID))
+                .andExpect(status().isOk())
+                .andExpect(content().json(mapper.writeValueAsString(expectedBookDto)));
+    }
+
     @DisplayName("должен сохранять измененную книгу")
     @Test
-    void shouldSavePersonAndRedirectToContextPath() throws Exception {
+    void shouldCorrectSaveNewBook() throws Exception {
         BookDto expectedBookDto = getTestListBookDto().get(0);
            when(bookService.update(expectedBookDto.getId(),
                    expectedBookDto.getTitle(),
@@ -76,7 +90,7 @@ class BookControllerTest {
 
     @DisplayName("должен удалять книгу по id ")
     @Test
-    void shouldDeletePersonAndRedirectToContextPath() throws Exception {
+    void shouldDeleteBook() throws Exception {
         BookDto expectedBookDto = getTestListBookDto().get(0);
         String expectedResult = mapper.writeValueAsString(expectedBookDto);
 
