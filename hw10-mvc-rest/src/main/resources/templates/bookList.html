@@ -82,13 +82,9 @@
     function deleteBook(idBook) {
         fetch("api/books/" + idBook, {
             method: 'DELETE',
+        }).then(() => {
+            window.location.reload()
         })
-            .then(() => {
-                row.remove()
-            })
-            .then(() => {
-                window.location.reload()
-            })
     }
 
     window.addEventListener('load', fillTable)
