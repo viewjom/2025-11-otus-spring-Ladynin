@@ -71,7 +71,7 @@
                                           <a href=/bookEdit?id=${id}>
                                                 <button type="button">Edit</button>
                                               </a>
-                                              <button type="submit" onclick="deleteBook(${id})">Delete</button>
+                                              <button type="button" onclick="deleteBook(${id})">Delete</button>
                                           </td>
                                       </tr>`
                         bookTable.insertAdjacentHTML('beforeend', temp)
@@ -85,9 +85,6 @@
         })
             .then(() => {
                 row.remove()
-            })
-            .then(() => {
-                evt.preventDefault();
             })
             .then(() => {
                 window.location.reload()
