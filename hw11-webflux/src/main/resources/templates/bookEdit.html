@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit person</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+        .row {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    function saveBook() {
+        const bookTitleId = document.getElementById("id-input")
+        const bookTitleInput = document.getElementById("book-title-input")
+        if (bookTitleInput.value === "") {
+            alert("Заполните Заголовок");
+            return;
+        }
+        const authorInput = document.getElementById("author-select")
+        const authorText = authorInput.options[authorInput.selectedIndex].text
+        const genreInput = document.getElementById("genre-select")
+        const genreText = genreInput.options[genreInput.selectedIndex].text
+        const book = {
+            id: bookTitleId.value,
+            title: bookTitleInput.value,
+            authorDto: {id: authorInput.value, fullName: authorText},
+            genreDto: {id: genreInput.value, name: genreText}
+        }
+        fetch("/api/books", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(book)
+        })
+            .then(rawResponse => rawResponse.json())
+            .then(() => {
+                window.location.href = '/books'
+            })
+    }
+
+    function editBook(idBook) {
+        fetch("/api/books/" + idBook)
+            .then(res => res.json())
+            .then((data) => {
+                document.getElementById("id-input").value = data.id;
+                document.getElementById("book-title-input").value = data.title;
+                addAuthorList(data.authorDto.id);
+                addGenreList(data.genreDto.id);
+            })
+    }
+
+    function addAuthorList(authorId) {
+        const authorSelect = document.getElementById("author-select");
+        fetch("/api/authors")
+            .then(value => value.json())
+            .then(value => {
+                value.forEach(author => {
+                    var selected = false;
+                    if (authorId === author.id) {
+                        selected = true;
+                    }
+                    var option = new Option(author.fullName, author.id, false, selected);
+                    authorSelect.appendChild(option);
+                    option = document.createElement('option');
+                })
+            })
+    }
+
+    function addGenreList(genreId) {
+        const genreSelect = document.getElementById("genre-select");
+        fetch("/api/genres")
+            .then(value => value.json())
+            .then(value => {
+                value.forEach(genre => {
+                    var selected = false;
+                    if (genreId === genre.id) {
+                        selected = true;
+                    }
+                    var option = new Option(genre.name, genre.id, false, selected);
+                    genreSelect.appendChild(option);
+                    option = document.createElement('option');
+                })
+            })
+    }
+
+    window.onload = function () {
+        const url = new URL(window.location);
+        const bookId = url.searchParams.get('id');
+        if (bookId != null) {
+            editBook(bookId);
+        } else {
+            addAuthorList("1");
+            addGenreList("1");
+        }
+    }
+</script>
+<!-- Book edition -->
+<form id="edit-form" action="bookEdit.html" method="post">
+    <h3>Book Info:</h3>
+
+    <div class="row">
+        <label for="id-input">ID:</label>
+        <input id="id-input" type="text" readonly="readonly"/>
+    </div>
+
+    <div class="row">
+        <label for="book-title-input">Title:</label>
+        <input id="book-title-input" name="title" type="text"/>
+    </div>
+
+    <div class="row">
+        <label for="author-select">Author:</label>
+        <select id="author-select">
+        </select>
+    </div>
+
+    <div class="row">
+        <label for="genre-select">Genre:</label>
+        <select id="genre-select">
+        </select>
+    </div>
+
+    <div class="row">
+        <button type="button" onclick="saveBook()">Save</button>
+        <a href="/">
+            <button type="button">Cancel</button>
+        </a>
+    </div>
+</form>
+</body>
+</html>
