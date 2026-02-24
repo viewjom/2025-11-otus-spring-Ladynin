@@ -1,11 +1,13 @@
 package ru.otus.hw.converters;
 
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.models.Book;
 
 @RequiredArgsConstructor
+@EqualsAndHashCode
 @Component
 public class BookDtoConverter {
     private final AuthorDtoConverter authorConverter;

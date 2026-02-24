@@ -1,17 +1,16 @@
 spring:
   data:
     mongodb:
-      port: 0
+      port: 27017
       database: main
-
+      host: localhost
+      uri: mongodb://localhost:27017
 de:
   flapdoodle:
     mongodb:
       embedded:
         version: 4.0.2
-
 mongock:
-  runner-type: applicationrunner
   mongo-db:
     write-concern:
       journal: false
