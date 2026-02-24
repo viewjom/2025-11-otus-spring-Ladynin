@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class GenreController {
 
-    //http://localhost:8080/genre
+    //http://localhost:8080/genres
     @GetMapping({"/genres"})
     public String findAllGenres() {
         return "genreList";

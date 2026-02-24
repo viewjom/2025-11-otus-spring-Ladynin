@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class CommentController {
 
 
-    //http://localhost:8080/comment?id=1
+    //http://localhost:8080/comments?id=1
     @GetMapping("/comments")
     public String findAllForBook() {
         return "commentList";

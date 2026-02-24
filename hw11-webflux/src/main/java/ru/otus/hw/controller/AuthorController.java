@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class AuthorController {
 
-    //http://localhost:8080/author
-    @GetMapping({"/author", "/authors"})
+    //http://localhost:8080/authors
+    @GetMapping({"/authors"})
     public String findAllAuthors() {
         return "authorList";
     }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class BookController {
 
-    //http://localhost:8080/book
+    //http://localhost:8080/books
     @GetMapping({"/", "/books"})
     public String findAllBooks() {
         return "bookList";
