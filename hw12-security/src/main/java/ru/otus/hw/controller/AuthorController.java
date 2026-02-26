@@ -14,7 +14,7 @@ public class AuthorController {
 
     private final AuthorService authorService;
 
-    //http://localhost:8080/author
+    //http://localhost:8080/authors
     @GetMapping({ "/authors"})
     public String findAllAuthors(Model model) {
         List<AuthorDto> authorList = authorService.findAll();
