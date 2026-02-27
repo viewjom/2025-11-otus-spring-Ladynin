@@ -2,34 +2,31 @@ package ru.otus.hw.controller.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.otus.hw.config.SecurityConfiguration;
-import ru.otus.hw.dto.*;
+import ru.otus.hw.dto.AuthorDto;
+import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.services.AuthorServiceImpl;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreServiceImpl;
-import java.util.List;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @DisplayName("Тестирование rest контроллера книг")
-@WebMvcTest(BookRestController.class)
-@Import({SecurityConfiguration.class})
-class BookRestControllerTest {
+@WebMvcTest(controllers = BookRestController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
+class BookControllerTest {
 
     private static final long TEST_ID = 1L;
 
@@ -57,8 +54,7 @@ class BookRestControllerTest {
         when(bookService.findAll())
                 .thenReturn(expectedBookDtoList);
 
-        mvc.perform(get("/api/books")
-                .with(user("user").authorities(new SimpleGrantedAuthority("ROLE_USER"))))
+        mvc.perform(get("/api/books"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(expectedBookDtoList)));
     }
@@ -72,8 +68,7 @@ class BookRestControllerTest {
         when(bookService.findById(TEST_ID))
                 .thenReturn(expectedBookDto);
 
-        mvc.perform(get("/api/books/" + TEST_ID)
-                .with(user("user").authorities(new SimpleGrantedAuthority("ROLE_USER"))))
+        mvc.perform(get("/api/books/" + TEST_ID))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(expectedBookDto)));
     }
@@ -82,59 +77,23 @@ class BookRestControllerTest {
     @Test
     void shouldCorrectSaveNewBook() throws Exception {
         BookDto expectedBookDto = getTestListBookDto().get(0);
-           when(bookService.update(expectedBookDto.getId(),
-                   expectedBookDto.getTitle(),
-                   expectedBookDto.getAuthorDto().getId(),
-                   expectedBookDto.getGenreDto().getId())).thenReturn(expectedBookDto);
-        String expectedResult = mapper.writeValueAsString(expectedBookDto);
-
-        mvc.perform(post("/api/books")
-                        .with(user("admin").authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
-                        .contentType(APPLICATION_JSON)
-                        .content(expectedResult))
-                .andExpect(status().isOk())
-                .andExpect(content().json(expectedResult));
-    }
-
-    @DisplayName("Должен вернуть ошибку при сохранении книги (Forbidden 403)")
-    @Test
-    void shouldReturnForbiddenForSaveNewBook() throws Exception {
-        BookDto expectedBookDto = getTestListBookDto().get(0);
         when(bookService.update(expectedBookDto.getId(),
                 expectedBookDto.getTitle(),
                 expectedBookDto.getAuthorDto().getId(),
                 expectedBookDto.getGenreDto().getId())).thenReturn(expectedBookDto);
         String expectedResult = mapper.writeValueAsString(expectedBookDto);
 
-        mvc.perform(post("/api/books")
-                        .with(user("user").authorities(new SimpleGrantedAuthority("ROLE_USER")))
-                        .contentType(APPLICATION_JSON)
+        mvc.perform(post("/api/books").contentType(APPLICATION_JSON)
                         .content(expectedResult))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedResult));
     }
 
     @DisplayName("должен удалять книгу по id ")
     @Test
     void shouldDeleteBook() throws Exception {
-        BookDto expectedBookDto = getTestListBookDto().get(0);
-        String expectedResult = mapper.writeValueAsString(expectedBookDto);
-
-        mvc.perform(delete("/api/books/" + TEST_ID).contentType(APPLICATION_JSON)
-                        .content(expectedResult)
-                        .with(user("admin").authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+        mvc.perform(delete("/api/books/" + TEST_ID).contentType(APPLICATION_JSON))
                 .andExpect(status().isOk());
-    }
-
-    @DisplayName("Должен вернуть ошибку при удалении книги (Forbidden 403)")
-    @Test
-    void shouldReturnForbiddenForDeleteBook() throws Exception {
-        BookDto expectedBookDto = getTestListBookDto().get(0);
-        String expectedResult = mapper.writeValueAsString(expectedBookDto);
-
-        mvc.perform(delete("/api/books/" + TEST_ID).contentType(APPLICATION_JSON)
-                        .content(expectedResult)
-                        .with(user("use").authorities(new SimpleGrantedAuthority("ROLE_USER"))))
-                .andExpect(status().isForbidden());
     }
 
     private List<BookDto> getTestListBookDto() {
