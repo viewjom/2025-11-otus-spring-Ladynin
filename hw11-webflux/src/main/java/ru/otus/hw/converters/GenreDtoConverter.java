@@ -11,4 +11,8 @@ public class GenreDtoConverter {
     public GenreDto getDto(Genre genre) {
         return new GenreDto(genre.getId(), genre.getName());
     }
+
+    public Genre toModel(GenreDto dto) {
+        return new Genre(dto.getId(), dto.getName());
+    }
 }

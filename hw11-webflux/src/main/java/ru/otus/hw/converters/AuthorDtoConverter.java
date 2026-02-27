@@ -9,4 +9,8 @@ public class AuthorDtoConverter {
     public AuthorDto getDto(Author author) {
         return new AuthorDto(author.getId(), author.getFullName());
     }
+
+    public Author toModel(AuthorDto dto) {
+        return new Author(dto.getId(), dto.getFullName());
+    }
 }

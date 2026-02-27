@@ -10,7 +10,7 @@ public class Application {
         SpringApplication.run(Application.class, args);
         System.out.println("http://localhost:8080/authors");
         System.out.println("http://localhost:8080/genres");
-        System.out.println("http://localhost:8080/comments?id=1");
+        System.out.println("http://localhost:8080/api/comments?bookId=1");
         System.out.println("http://localhost:8080/books");
         System.out.println("http://localhost:8080/api/books");
     }

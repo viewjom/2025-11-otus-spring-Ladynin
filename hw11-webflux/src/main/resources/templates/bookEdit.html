@@ -30,6 +30,7 @@
             alert("Заполните Заголовок");
             return;
         }
+        const idBook = document.getElementById("id-input").value
         const authorInput = document.getElementById("author-select")
         const authorText = authorInput.options[authorInput.selectedIndex].text
         const genreInput = document.getElementById("genre-select")
@@ -37,10 +38,10 @@
         const book = {
             id: bookTitleId.value,
             title: bookTitleInput.value,
-            authorDto: {id: authorInput.value, fullName: authorText},
-            genreDto: {id: genreInput.value, name: genreText}
+            authorDto: {id: authorInput.value},
+            genreDto: {id: genreInput.value}
         }
-        fetch("/api/books", {
+        fetch("/api/books/" + idBook, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -116,7 +117,7 @@
 
     <div class="row">
         <label for="id-input">ID:</label>
-        <input id="id-input" type="text" readonly="readonly"/>
+        <input id="id-input" type="text" value="0" readonly="readonly"/>
     </div>
 
     <div class="row">

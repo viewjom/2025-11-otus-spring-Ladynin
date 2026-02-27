@@ -23,8 +23,11 @@ import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
 import ru.otus.hw.models.Genre;
+import ru.otus.hw.repositories.ReactiveAuthorRepository;
 import ru.otus.hw.repositories.ReactiveBookRepository;
 import ru.otus.hw.repositories.ReactiveCommentRepository;
+import ru.otus.hw.repositories.ReactiveGenreRepository;
+
 import static org.assertj.core.api.Assertions.assertThatList;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,7 +50,13 @@ public class BookRestControllerTest {
     private ReactiveBookRepository bookRepository;
 
     @MockBean
-    private ReactiveCommentRepository reactiveCommentRepository;
+    private ReactiveCommentRepository commentRepository;
+
+    @MockBean
+    private ReactiveAuthorRepository authorRepository;
+
+    @MockBean
+    private ReactiveGenreRepository genreRepository;
 
     @DisplayName("Должен вернуть все книги")
     @Test
@@ -99,18 +108,24 @@ public class BookRestControllerTest {
     void shouldSaveBook() {
         Book expectedBook = getTestListBook().get(0);
         expectedBook.setTitle("NewTitle");
-        expectedBook.setGenre(new Genre("2", "Genre_2"));
-
+        Author expectedAuthor = new Author("2", "Author_2");
+        Genre expectedGenre = new Genre("2", "Genre_2");
+        expectedBook.setAuthor(expectedAuthor);
+        expectedBook.setGenre(expectedGenre);
         BookDto expectedDtoResult = bookDtoConverter.getDto(expectedBook);
 
+
+        when(authorRepository.findById("2")).thenReturn(Mono.just(expectedAuthor));
+        when(genreRepository.findById("2")).thenReturn(Mono.just(expectedGenre));
+        when(bookRepository.findById(TEST_ID)).thenReturn(Mono.just(expectedBook));
         when(bookRepository.save(expectedBook)).thenReturn(Mono.just(expectedBook));
 
         var result = webTestClient
-                .post().uri("/api/books")
+                .post().uri("/api/books/" + TEST_ID)
                 .bodyValue(expectedDtoResult)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
-                .expectStatus().isCreated()
+                .expectStatus().isOk()
                 .returnResult(BookDto.class)
                 .getResponseBody()
                 .collectList()
@@ -122,31 +137,33 @@ public class BookRestControllerTest {
     @DisplayName("Должен создать книгу")
     @Test
     void shouldCreateBook() {
-        Book expectedNewBook = new Book("1000", "BookTitle_1",
-                new Author(TEST_ID, "Author_1"),
-                new Genre(TEST_ID, "Genre_1"));
+        Author expectedAuthor = new Author(TEST_ID, "Author_1");
+        Genre expectedGenre = new Genre(TEST_ID, "Genre_1");
+        Book expectedNewBook = new Book("1000","Test", expectedAuthor, expectedGenre);
+        BookDto expectedBookDto = bookDtoConverter.getDto(expectedNewBook);
 
-        BookDto expectedDtoResult = bookDtoConverter.getDto(expectedNewBook);
-
+        when(authorRepository.findById(TEST_ID)).thenReturn(Mono.just(expectedAuthor));
+        when(genreRepository.findById(TEST_ID)).thenReturn(Mono.just(expectedGenre));
         when(bookRepository.save(expectedNewBook)).thenReturn(Mono.just(expectedNewBook));
 
         var result = webTestClient
-                .post().uri("/api/books")
-                .bodyValue(expectedDtoResult)
+                .post().uri("/api/books/0")
+                .bodyValue(expectedBookDto)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
-                .expectStatus().isCreated()
+                .expectStatus().isOk()
                 .returnResult(BookDto.class)
                 .getResponseBody()
                 .collectList()
                 .block();
 
-        assertThat(result).isEqualTo(List.of(expectedDtoResult));
+        assertThat(result).isEqualTo(List.of(expectedBookDto));
     }
 
     @DisplayName("Должен удалить книгу")
     @Test
     void shouldDelBook() {
+        when(commentRepository.deleteAllByBookId((String) any())).thenReturn(Mono.empty());
         when(bookRepository.deleteById((String) any())).thenReturn(Mono.empty());
 
         webTestClient
