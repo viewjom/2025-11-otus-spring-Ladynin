@@ -13,6 +13,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.otus.hw.converters.BookDtoConverter;
 import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.models.Author;
+import ru.otus.hw.models.Genre;
 import ru.otus.hw.repositories.ReactiveAuthorRepository;
 import ru.otus.hw.repositories.ReactiveBookRepository;
 import ru.otus.hw.repositories.ReactiveCommentRepository;
@@ -62,10 +64,11 @@ public class BookRestController {
 
     @PostMapping("/api/books/{id}")
     public Mono<ResponseEntity<BookDto>> updateBook(@RequestBody BookDto book, @PathVariable(value = "id") String id) {
-        return bookRepository.findById(book.getId())
-                .flatMap(b -> authorRepository.findById(book.getAuthorDto().getId())
-                        .flatMap(author -> genreRepository.findById(book.getGenreDto().getId())
-                                .flatMap(genre -> bookRepository.save(bookDtoConverter.toModel(book, author, genre)))))
+        Mono<Author> authorMono = authorRepository.findById(book.getAuthorDto().getId());
+        Mono<Genre> genreMono = genreRepository.findById(book.getGenreDto().getId());
+        return Mono.zip(authorMono, genreMono)
+                .flatMap(p ->
+                    bookRepository.save(bookDtoConverter.toModel(book, p.getT1(), p.getT2())))
                 .map(newBook -> new ResponseEntity<>(bookDtoConverter.getDto(newBook), HttpStatus.OK))
                 .switchIfEmpty(Mono.fromCallable(() -> ResponseEntity.notFound().build()));
     }
