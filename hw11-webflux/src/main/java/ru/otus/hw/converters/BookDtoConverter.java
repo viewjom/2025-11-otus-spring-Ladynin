@@ -1,0 +1,28 @@
+package ru.otus.hw.converters;
+
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.models.Author;
+import ru.otus.hw.models.Book;
+import ru.otus.hw.models.Genre;
+
+@RequiredArgsConstructor
+@EqualsAndHashCode
+@Component
+public class BookDtoConverter {
+    private final AuthorDtoConverter authorConverter;
+
+    private final GenreDtoConverter genreConverter;
+
+    public BookDto getDto(Book book) {
+        return new BookDto(book.getId(), book.getTitle(),
+                authorConverter.getDto(book.getAuthor()),
+                genreConverter.getDto(book.getGenre()));
+    }
+
+    public Book toModel(BookDto dto, Author author, Genre genre) {
+        return new Book(dto.getId(), dto.getTitle(), author, genre);
+    }
+}

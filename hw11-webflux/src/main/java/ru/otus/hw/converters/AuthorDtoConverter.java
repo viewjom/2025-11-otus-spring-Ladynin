@@ -1,0 +1,16 @@
+package ru.otus.hw.converters;
+
+import org.springframework.stereotype.Component;
+import ru.otus.hw.dto.AuthorDto;
+import ru.otus.hw.models.Author;
+
+@Component
+public class AuthorDtoConverter {
+    public AuthorDto getDto(Author author) {
+        return new AuthorDto(author.getId(), author.getFullName());
+    }
+
+    public Author toModel(AuthorDto dto) {
+        return new Author(dto.getId(), dto.getFullName());
+    }
+}
