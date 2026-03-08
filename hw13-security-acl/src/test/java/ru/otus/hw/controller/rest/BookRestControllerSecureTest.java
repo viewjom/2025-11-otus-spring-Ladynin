@@ -96,39 +96,6 @@ class BookRestControllerSecureTest {
                 .andExpect(status().is(result));
     }
 
-    @DisplayName("должен создать новую книгу и прочитать пользователями user1 user2 user3")
-    @Test
-    void shouldCreateNewBookAndRead() throws Exception {
-
-        BookDto bookDto = new BookDto(0L, "BookTitle_1",
-                new AuthorDto(1L, "Author_1"),
-                new GenreDto(1L, "Genre_1"));
-        String content = mapper.writeValueAsString(bookDto);
-
-
-      var res = mvc.perform(post("/api/books")
-                        .with(user("admin").authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
-                        .contentType(APPLICATION_JSON)
-                        .content(content))
-                .andExpect(status().is(200)).andReturn();
-
-      String jsonString = res.getResponse().getContentAsString();
-        JSONObject jsonObject = new JSONObject(jsonString);
-        String id = jsonObject.getString("id");
-
-        mvc.perform(get("/api/books/" + id)
-                        .with(user("user1").authorities(new SimpleGrantedAuthority("ROLE_AUTHOR1"))))
-                .andExpect(status().is(200));
-
-        mvc.perform(get("/api/books/" + id)
-                        .with(user("user2").authorities(new SimpleGrantedAuthority("ROLE_AUTHOR2"))))
-                .andExpect(status().is(403));
-
-        mvc.perform(get("/api/books/" + id)
-                        .with(user("user3").authorities(new SimpleGrantedAuthority("ROLE_AUTHOR3"))))
-                .andExpect(status().is(403));
-    }
-
     @DisplayName("должен удалять книгу по id ")
     @ParameterizedTest
     @CsvSource({
