@@ -1,0 +1,16 @@
+package ru.otus.hw.converters;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import ru.otus.hw.dto.CommentDto;
+import ru.otus.hw.models.Comment;
+
+@RequiredArgsConstructor
+@Component
+public class CommentDtoConverter {
+
+    public CommentDto getDto(Comment comment) {
+        CommentDto dto = new CommentDto(comment.getId(), comment.getText());
+        return dto;
+    }
+}
