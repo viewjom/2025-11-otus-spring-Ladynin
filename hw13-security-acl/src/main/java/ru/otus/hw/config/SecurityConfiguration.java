@@ -12,16 +12,14 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        SecurityFilterChain sfc =  http.csrf().disable()
+        SecurityFilterChain sfc = http.csrf().disable()
                 .authorizeRequests(auth -> auth
                         .anyRequest().authenticated()
                 )
-                .formLogin()
-                .and()
-            //    .formLogin(fm -> {fm.failureForwardUrl("/fail");
-             //   })
+                .formLogin(fm -> {
+                    fm.failureForwardUrl("/fail");
+                })
                 .build();
-
         return sfc;
     }
 
