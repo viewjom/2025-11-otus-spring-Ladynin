@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,12 @@ import ru.otus.hw.Application;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.GenreDto;
+import org.json.JSONObject;
+import org.json.JSONException;
+import ru.otus.hw.services.BookServiceImpl;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.logout;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,9 +49,11 @@ class BookRestControllerSecureTest {
               "/api/books/3, user1, ROLE_AUTHOR1, 403"
     })
     void shouldGetBookSecureReturn(String url, String user, String role, int result) throws Exception {
-        mvc.perform(get(url)
+      var res = mvc.perform(get(url)
                         .with(user(user).authorities(new SimpleGrantedAuthority(role))))
-                .andExpect(status().is(result));
+                .andExpect(status().is(result)).andReturn();
+
+        res.getRequest().logout();
     }
 
     @DisplayName("должен сохранять измененную книгу")
@@ -87,6 +94,39 @@ class BookRestControllerSecureTest {
                         .contentType(APPLICATION_JSON)
                         .content(content))
                 .andExpect(status().is(result));
+    }
+
+    @DisplayName("должен создать новую книгу и прочитать пользователями user1 user2 user3")
+    @Test
+    void shouldCreateNewBookAndRead() throws Exception {
+
+        BookDto bookDto = new BookDto(0L, "BookTitle_1",
+                new AuthorDto(1L, "Author_1"),
+                new GenreDto(1L, "Genre_1"));
+        String content = mapper.writeValueAsString(bookDto);
+
+
+      var res = mvc.perform(post("/api/books")
+                        .with(user("admin").authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
+                        .contentType(APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().is(200)).andReturn();
+
+      String jsonString = res.getResponse().getContentAsString();
+        JSONObject jsonObject = new JSONObject(jsonString);
+        String id = jsonObject.getString("id");
+
+        mvc.perform(get("/api/books/" + id)
+                        .with(user("user1").authorities(new SimpleGrantedAuthority("ROLE_AUTHOR1"))))
+                .andExpect(status().is(200));
+
+        mvc.perform(get("/api/books/" + id)
+                        .with(user("user2").authorities(new SimpleGrantedAuthority("ROLE_AUTHOR2"))))
+                .andExpect(status().is(403));
+
+        mvc.perform(get("/api/books/" + id)
+                        .with(user("user3").authorities(new SimpleGrantedAuthority("ROLE_AUTHOR3"))))
+                .andExpect(status().is(403));
     }
 
     @DisplayName("должен удалять книгу по id ")
