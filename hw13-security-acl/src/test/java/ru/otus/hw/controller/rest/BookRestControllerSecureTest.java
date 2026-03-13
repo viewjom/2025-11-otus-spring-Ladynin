@@ -9,7 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.otus.hw.Application;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.GenreDto;
@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Тестирование rest контроллера книг")
-@SpringBootTest(classes = Application.class)
+@SpringBootTest()
 @AutoConfigureMockMvc
 class BookRestControllerSecureTest {
 
@@ -97,6 +97,7 @@ class BookRestControllerSecureTest {
             "/api/books/1, admin, ROLE_ADMIN, 200",
             "/api/books/3, admin, ROLE_ADMIN, 200"
     })
+    @Transactional
     void shouldDeleteBook(String url, String user, String role, int result) throws Exception {
         mvc.perform(delete(url).contentType(APPLICATION_JSON)
                         .with(user(user).authorities(new SimpleGrantedAuthority(role))))

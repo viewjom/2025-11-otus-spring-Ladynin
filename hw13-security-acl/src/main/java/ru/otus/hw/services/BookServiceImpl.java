@@ -25,6 +25,8 @@ public class BookServiceImpl implements BookService {
 
     private final BookDtoConverter bookConverter;
 
+    private final BookFilterService bookFilterService;
+
     private final AclServiceWrapperService aclServiceWrapperService;
 
     @Override
@@ -36,7 +38,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookDto> findAll() {
-        List<BookDto> book = bookRepository.findAll()
+        List<BookDto> book = bookFilterService.findAll()
                 .stream().map(bookConverter::getDto).toList();
         return book;
     }

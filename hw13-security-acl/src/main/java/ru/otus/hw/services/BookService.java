@@ -9,8 +9,6 @@ public interface BookService {
 
     List<BookDto> findAll();
 
-  //  BookDto create(String title, long authorId, long genreId);
-
     BookDto update(long id, String title, long authorId, long genreId);
 
     void deleteById(long id);
