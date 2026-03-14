@@ -1,0 +1,39 @@
+package ru.otus.hw.services;
+
+import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.security.acls.domain.GrantedAuthoritySid;
+import org.springframework.security.acls.domain.ObjectIdentityImpl;
+import org.springframework.security.acls.model.MutableAclService;
+import org.springframework.security.acls.model.ObjectIdentity;
+import org.springframework.security.acls.model.Sid;
+import org.springframework.security.acls.model.MutableAcl;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import ru.otus.hw.models.Book;
+
+@Service
+public class AclServiceWrapperServiceImpl implements AclServiceWrapperService {
+
+    private final MutableAclService mutableAclService;
+
+    public AclServiceWrapperServiceImpl(MutableAclService mutableAclService) {
+        this.mutableAclService = mutableAclService;
+    }
+
+    @Override
+    public void createPermission(Object object) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        ObjectIdentity oid = new ObjectIdentityImpl(object);
+
+        final Sid admin = new GrantedAuthoritySid("ROLE_ADMIN");
+        final Sid subscription = new GrantedAuthoritySid(String.format("ROLE_%s",
+                ((Book) object).getAuthor().getFullName().toUpperCase().replace("_", "")));
+
+        MutableAcl acl = mutableAclService.createAcl(oid);
+        acl.insertAce(acl.getEntries().size(), BasePermission.READ, admin, true);
+        acl.insertAce(acl.getEntries().size(), BasePermission.WRITE, admin, true);
+        acl.insertAce(acl.getEntries().size(), BasePermission.READ, subscription, true);
+        mutableAclService.updateAcl(acl);
+    }
+}
