@@ -3,13 +3,15 @@ package ru.otus.hw.batch;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.batch.core.ItemReadListener;
+import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.data.RepositoryItemReader;
 import org.springframework.batch.item.data.RepositoryItemWriter;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Sort;
+import org.springframework.lang.NonNull;
 import org.springframework.transaction.PlatformTransactionManager;
 import ru.otus.hw.models.jpa.JpaAuthor;
 import ru.otus.hw.models.jpa.JpaBook;
@@ -34,11 +37,10 @@ import ru.otus.hw.repositories.mongo.MongoBookRepository;
 import ru.otus.hw.repositories.mongo.MongoCommentRepository;
 import ru.otus.hw.repositories.mongo.MongoGenreRepository;
 import ru.otus.hw.repositories.mongo.MongoAuthorRepository;
-import ru.otus.hw.services.jpa.JpaService;
 
 @Configuration
 @RequiredArgsConstructor
-public class JobConfig {
+public class JobConfig<T> {
 
     public static final String IMPORT_BOOK_JOB_NAME = "importBookJob";
 
@@ -51,8 +53,6 @@ public class JobConfig {
     private final JpaBookRepository jpaBookRepository;
 
     private final JpaCommentRepository jpaCommentRepository;
-
-    private final JpaService jpaService;
 
     private final MongoAuthorRepository mongoAuthorRepository;
 
@@ -68,7 +68,10 @@ public class JobConfig {
     @Autowired
     private PlatformTransactionManager platformTransactionManager;
 
-    @StepScope
+    private Map<String, T> map = new HashMap<>();
+
+    private String lastMongoId;
+
     @Bean
     public RepositoryItemReader<MongoAuthor> authorReader() {
         Map<String, Sort.Direction> sorts = new HashMap<>();
@@ -84,7 +87,6 @@ public class JobConfig {
 
     }
 
-    @StepScope
     @Bean
     public RepositoryItemReader<MongoGenre> genreReader() {
         Map<String, Sort.Direction> sorts = new HashMap<>();
@@ -99,7 +101,6 @@ public class JobConfig {
         return reader;
     }
 
-    @StepScope
     @Bean
     public RepositoryItemReader<MongoBook> bookReader() {
         Map<String, Sort.Direction> sorts = new HashMap<>();
@@ -114,7 +115,6 @@ public class JobConfig {
         return reader;
     }
 
-    @StepScope
     @Bean
     public RepositoryItemReader<MongoComment> commentItemReader() {
         Map<String, Sort.Direction> sorts = new HashMap<>();
@@ -129,23 +129,38 @@ public class JobConfig {
         return reader;
     }
 
-
     @Bean
-    public AuthorProcessor authorProcessor() {
-        return new AuthorProcessor();
+    public ItemProcessor<MongoAuthor, JpaAuthor> authorProcessor() {
+        return item -> {
+            return new JpaAuthor(0L, item.getFullName());
+        };
     }
 
     @Bean
-    public GenreProcessor genreProcessor() {
-        return new GenreProcessor();
+    public ItemProcessor<MongoGenre, JpaGenre> genreProcessor() {
+        return item -> {
+            return new JpaGenre(0L, item.getName());
+        };
+    }
+
+
+    @Bean
+    public ItemProcessor<MongoBook, JpaBook> bookProcessor() {
+        return item -> {
+            JpaAuthor jpaAuthor = (JpaAuthor) map.get(item.getAuthor().getId());
+            JpaGenre jpaGenre = (JpaGenre) map.get(item.getGenre().getId());
+            return new JpaBook(0l, item.getTitle(), jpaAuthor, jpaGenre);
+        };
     }
 
     @Bean
-    public BookProcessor bookProcessor() {
-        return new BookProcessor();
+    public ItemProcessor<MongoComment, JpaComment> commentProcessor() {
+        return item -> {
+            JpaBook jpaBook = (JpaBook) map.get(item.getBook().getId());
+            return new JpaComment(0l, item.getText(), jpaBook);
+        };
     }
 
-    @StepScope
     @Bean
     public RepositoryItemWriter<JpaAuthor> authorWriter() {
         RepositoryItemWriter<JpaAuthor> writer = new RepositoryItemWriter<>();
@@ -154,7 +169,6 @@ public class JobConfig {
         return writer;
     }
 
-    @StepScope
     @Bean
     public RepositoryItemWriter<JpaGenre> genreWriter() {
         RepositoryItemWriter<JpaGenre> writer = new RepositoryItemWriter<>();
@@ -163,7 +177,6 @@ public class JobConfig {
         return writer;
     }
 
-    @StepScope
     @Bean
     public RepositoryItemWriter<JpaBook> bookWriter() {
         RepositoryItemWriter<JpaBook> writer = new RepositoryItemWriter<>();
@@ -172,7 +185,6 @@ public class JobConfig {
         return writer;
     }
 
-    @StepScope
     @Bean
     public RepositoryItemWriter<JpaComment> commentWriter() {
         RepositoryItemWriter<JpaComment> writer = new RepositoryItemWriter<>();
@@ -183,35 +195,100 @@ public class JobConfig {
 
     @Bean
     public Job importFromDatabaseJob(Step transformBookStep,
+                                     Step transformAuthorStep,
+                                     Step transformGenreStep,
                                      Step transformCommentStep
     ) {
         return new JobBuilder(IMPORT_BOOK_JOB_NAME, jobRepository)
                 .incrementer(new RunIdIncrementer())
-                .flow(transformBookStep)
+                .flow(transformAuthorStep)
+                .next(transformGenreStep)
+                .next(transformBookStep)
                 .next(transformCommentStep)
                 .end()
                 .build();
     }
 
     @Bean
-    public Step transformBookStep(RepositoryItemReader<MongoBook> reader,
-                                  RepositoryItemWriter<JpaBook> writer,
-                                  BookProcessor itemProcessor) {
-        return new StepBuilder("transformBookStep", jobRepository)
-                .<MongoBook, JpaBook>chunk(CHUNK_SIZE, platformTransactionManager)
+    public Step transformGenreStep(RepositoryItemReader<MongoGenre> reader,
+                                   RepositoryItemWriter<JpaGenre> writer,
+                                   ItemProcessor<MongoGenre, JpaGenre> itemProcessor
+    ) {
+        return new StepBuilder("transformGenreStep", jobRepository)
+                .<MongoGenre, JpaGenre>chunk(1, platformTransactionManager)
                 .reader(reader)
                 .processor(itemProcessor)
                 .writer(writer)
+                .listener(new ItemReadListener<>() {
+                    public void afterRead(@NonNull MongoGenre o) {
+                        lastMongoId = o.getId();
+                    }
+                })
+                .listener(new ItemWriteListener<JpaGenre>() {
+
+                    public void afterWrite(Chunk<? extends JpaGenre> items) {
+                        map.put(lastMongoId, (T) items.getItems().get(0));
+                    }
+                })
                 .build();
     }
 
     @Bean
+    public Step transformAuthorStep(RepositoryItemReader<MongoAuthor> reader,
+                                    RepositoryItemWriter<JpaAuthor> writer,
+                                    ItemProcessor<MongoAuthor, JpaAuthor> itemProcessor
+    ) {
+        return new StepBuilder("transformAuthorStep", jobRepository)
+                .<MongoAuthor, JpaAuthor>chunk(1, platformTransactionManager)
+                .reader(reader)
+                .processor(itemProcessor)
+                .writer(writer)
+                .listener(new ItemReadListener<>() {
+                    public void afterRead(@NonNull MongoAuthor o) {
+                        lastMongoId = o.getId();
+                    }
+                })
+                .listener(new ItemWriteListener<JpaAuthor>() {
+
+                    public void afterWrite(Chunk<? extends JpaAuthor> items) {
+                        map.put(lastMongoId, (T) items.getItems().get(0));
+                    }
+                })
+                .build();
+    }
+
+    @Bean
+    public Step transformBookStep(RepositoryItemReader<MongoBook> reader,
+                                  RepositoryItemWriter<JpaBook> writer,
+                                  ItemProcessor<MongoBook, JpaBook> itemProcessor
+    ) {
+        return new StepBuilder("transformBookStep", jobRepository)
+                .<MongoBook, JpaBook>chunk(1, platformTransactionManager)
+                .reader(reader)
+                .processor(itemProcessor)
+                .writer(writer)
+                .listener(new ItemReadListener<>() {
+                    public void afterRead(@NonNull MongoBook o) {
+                        lastMongoId = o.getId();
+                    }
+                })
+                .listener(new ItemWriteListener<JpaBook>() {
+                    public void afterWrite(Chunk<? extends JpaBook> items) {
+                        map.put(lastMongoId, (T) items.getItems().get(0));
+                    }
+                })
+                .build();
+    }
+
+
+    @Bean
     public Step transformCommentStep(RepositoryItemReader<MongoComment> reader,
-                                     RepositoryItemWriter<JpaComment> writer) {
+                                     RepositoryItemWriter<JpaComment> writer,
+                                     ItemProcessor<MongoComment, JpaComment> itemProcessor) {
         return new StepBuilder("transformCommentStep", jobRepository)
                 .<MongoComment, JpaComment>chunk(CHUNK_SIZE, platformTransactionManager)
                 .reader(reader)
-                .processor((ItemProcessor<MongoComment, JpaComment>) jpaService::prepareJpaComment)
+                .processor(itemProcessor)
                 .writer(writer)
                 .build();
     }

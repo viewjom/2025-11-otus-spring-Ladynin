@@ -103,22 +103,27 @@ class JobConfigTest {
         JpaBook book1 = new JpaBook(1L, "BookTitle_1",
                 new JpaAuthor(1L, "Author_1"),
                 new JpaGenre(1L, "Genre_1"));
-        JpaBook book2 = new JpaBook(2L, "BookTitle_2",
+        JpaBook book2 = new JpaBook(2L, "BookTitle_11",
+                new JpaAuthor(1L, "Author_1"),
+                new JpaGenre(1L, "Genre_1"));
+        JpaBook book3 = new JpaBook(3L, "BookTitle_2",
                 new JpaAuthor(2L, "Author_2"),
                 new JpaGenre(2L, "Genre_2"));
-        JpaBook book3 = new JpaBook(3L, "BookTitle_3",
+        JpaBook book4 = new JpaBook(4L, "BookTitle_3",
                 new JpaAuthor(3L, "Author_3"),
                 new JpaGenre(3L, "Genre_3"));
-        return List.of(book1, book2, book3);
+
+        return List.of(book1, book2, book3, book4);
     }
 
     private List<JpaComment> getExpectedCommentList() {
         List<JpaBook> bookList = getExpectedBookList();
         return List.of(new JpaComment(1L, "Хорошая книга", bookList.get(0)),
                 new JpaComment(2L, "Очень хорошая книга", bookList.get(0)),
-                new JpaComment(3L, "Нормальная книга", bookList.get(1)),
-                new JpaComment(4L, "Прекрасная книга", bookList.get(1)),
-                new JpaComment(5L, "Великолепная книга", bookList.get(2)),
-                new JpaComment(6L, "Крутая книга", bookList.get(2)));
+                new JpaComment(3L, "Нормальная книга", bookList.get(2)),
+                new JpaComment(4L, "Прекрасная книга", bookList.get(2)),
+                new JpaComment(5L, "Великолепная книга", bookList.get(3)),
+                new JpaComment(6L, "Крутая книга", bookList.get(3)),
+                new JpaComment(7L, "Очень крутая книга", bookList.get(1)));
     }
 }

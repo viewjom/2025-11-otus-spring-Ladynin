@@ -37,12 +37,12 @@ public class JpaBook {
     private String title;
 
     @NotNull
-    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private JpaAuthor author;
 
     @NotNull
-    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "genre_id")
     private JpaGenre genre;
 }

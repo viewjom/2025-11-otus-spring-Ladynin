@@ -21,6 +21,8 @@ public class DatabaseChangelog {
 
     private Document bookDoc3;
 
+    private Document bookDoc4;
+
     @ChangeSet(order = "001", id = "dropTables", author = "ladynin", runAlways = true)
     public void dropTables(MongoDatabase db) {
         db.drop();
@@ -28,20 +30,17 @@ public class DatabaseChangelog {
 
     @ChangeSet(order = "002", id = "addBooks", author = "ladynin")
     public void addBooks(MongoDatabase db) {
-
         MongoCollection<Document> authorsCollection = db.getCollection("authors");
         Document authorDoc1 = new Document().append("fullName", "Author_1");
         Document authorDoc2 = new Document().append("fullName", "Author_2");
         Document authorDoc3 = new Document().append("fullName", "Author_3");
         authorsCollection.insertMany(List.of(authorDoc1, authorDoc2, authorDoc3));
-
         //Genres
         MongoCollection<Document> genresCollection = db.getCollection("genres");
         var genreDoc1 = new Document().append("name", "Genre_1");
         var genreDoc2 = new Document().append("name", "Genre_2");
         var genreDoc3 = new Document().append("name", "Genre_3");
         genresCollection.insertMany(List.of(genreDoc1, genreDoc2, genreDoc3));
-
         //Books
         MongoCollection<Document> booksCollection = db.getCollection("books");
         bookDoc1 = new Document().append("title", "BookTitle_1").append("author", authorDoc1)
@@ -50,7 +49,9 @@ public class DatabaseChangelog {
                 .append("genre", genreDoc2);
         bookDoc3 = new Document().append("title", "BookTitle_3").append("author", authorDoc3)
                 .append("genre", genreDoc3);
-        booksCollection.insertMany(List.of(bookDoc1, bookDoc2, bookDoc3));
+        bookDoc4 = new Document().append("title", "BookTitle_11").append("author", authorDoc1)
+                .append("genre", genreDoc1);
+        booksCollection.insertMany(List.of(bookDoc1, bookDoc2, bookDoc3, bookDoc4));
     }
 
     @ChangeSet(order = "003", id = "addComments", author = "ladynin")
@@ -59,6 +60,7 @@ public class DatabaseChangelog {
         DBRef addressRef1 = new DBRef("books", bookDoc1.getObjectId("_id"));
         DBRef addressRef2 = new DBRef("books", bookDoc2.getObjectId("_id"));
         DBRef addressRef3 = new DBRef("books", bookDoc3.getObjectId("_id"));
+        DBRef addressRef4 = new DBRef("books", bookDoc4.getObjectId("_id"));
 
         MongoCollection<Document> commentsCollection = db.getCollection("comments");
 
@@ -68,8 +70,9 @@ public class DatabaseChangelog {
         var commentDoc4 = new Document().append("text", "Прекрасная книга").append("book", addressRef2);
         var commentDoc5 = new Document().append("text", "Великолепная книга").append("book", addressRef3);
         var commentDoc6 = new Document().append("text", "Крутая книга").append("book", addressRef3);
+        var commentDoc7 = new Document().append("text", "Очень крутая книга").append("book", addressRef4);
 
         commentsCollection.insertMany(List.of(commentDoc1, commentDoc2, commentDoc3, commentDoc4, commentDoc5
-                , commentDoc6));
+                , commentDoc6, commentDoc7));
     }
 }
