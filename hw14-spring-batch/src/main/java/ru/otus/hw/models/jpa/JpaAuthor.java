@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -26,4 +27,12 @@ public class JpaAuthor {
 
     @Column(name = "full_name")
     private String fullName;
+
+    @Transient
+    private String mongoId;
+
+    public JpaAuthor(long id, String fullName) {
+        this.id = id;
+        this.fullName = fullName;
+    }
 }

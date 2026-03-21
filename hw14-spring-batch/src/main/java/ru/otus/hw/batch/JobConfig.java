@@ -3,7 +3,6 @@ package ru.otus.hw.batch;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.batch.core.ItemReadListener;
 import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.Job;
@@ -19,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Sort;
-import org.springframework.lang.NonNull;
 import org.springframework.transaction.PlatformTransactionManager;
 import ru.otus.hw.models.jpa.JpaAuthor;
 import ru.otus.hw.models.jpa.JpaBook;
@@ -62,15 +60,13 @@ public class JobConfig<T> {
 
     private final MongoCommentRepository mongoCommentRepository;
 
+    private final BatchCache cache;
+
     @Autowired
     private JobRepository jobRepository;
 
     @Autowired
     private PlatformTransactionManager platformTransactionManager;
-
-    private Map<String, T> map = new HashMap<>();
-
-    private String lastMongoId;
 
     @Bean
     public RepositoryItemReader<MongoAuthor> authorReader() {
@@ -132,31 +128,30 @@ public class JobConfig<T> {
     @Bean
     public ItemProcessor<MongoAuthor, JpaAuthor> authorProcessor() {
         return item -> {
-            return new JpaAuthor(0L, item.getFullName());
+            return new JpaAuthor(0L, item.getFullName(), item.getId());
         };
     }
 
     @Bean
     public ItemProcessor<MongoGenre, JpaGenre> genreProcessor() {
         return item -> {
-            return new JpaGenre(0L, item.getName());
+            return new JpaGenre(0L, item.getName(), item.getId());
         };
     }
-
 
     @Bean
     public ItemProcessor<MongoBook, JpaBook> bookProcessor() {
         return item -> {
-            JpaAuthor jpaAuthor = (JpaAuthor) map.get(item.getAuthor().getId());
-            JpaGenre jpaGenre = (JpaGenre) map.get(item.getGenre().getId());
-            return new JpaBook(0l, item.getTitle(), jpaAuthor, jpaGenre);
+            JpaAuthor jpaAuthor = (JpaAuthor) cache.get(item.getAuthor().getId());
+            JpaGenre jpaGenre = (JpaGenre) cache.get(item.getGenre().getId());
+            return new JpaBook(0l, item.getTitle(), jpaAuthor, jpaGenre, item.getId());
         };
     }
 
     @Bean
     public ItemProcessor<MongoComment, JpaComment> commentProcessor() {
         return item -> {
-            JpaBook jpaBook = (JpaBook) map.get(item.getBook().getId());
+            JpaBook jpaBook = (JpaBook) cache.get(item.getBook().getId());
             return new JpaComment(0l, item.getText(), jpaBook);
         };
     }
@@ -210,48 +205,36 @@ public class JobConfig<T> {
     }
 
     @Bean
-    public Step transformGenreStep(RepositoryItemReader<MongoGenre> reader,
-                                   RepositoryItemWriter<JpaGenre> writer,
-                                   ItemProcessor<MongoGenre, JpaGenre> itemProcessor
+    public Step transformAuthorStep(RepositoryItemReader<MongoAuthor> reader,
+                                    RepositoryItemWriter<JpaAuthor> writer,
+                                    ItemProcessor<MongoAuthor, JpaAuthor> itemProcessor
     ) {
-        return new StepBuilder("transformGenreStep", jobRepository)
-                .<MongoGenre, JpaGenre>chunk(1, platformTransactionManager)
+        return new StepBuilder("transformAuthorStep", jobRepository)
+                .<MongoAuthor, JpaAuthor>chunk(CHUNK_SIZE, platformTransactionManager)
                 .reader(reader)
                 .processor(itemProcessor)
                 .writer(writer)
-                .listener(new ItemReadListener<>() {
-                    public void afterRead(@NonNull MongoGenre o) {
-                        lastMongoId = o.getId();
-                    }
-                })
-                .listener(new ItemWriteListener<JpaGenre>() {
-
-                    public void afterWrite(Chunk<? extends JpaGenre> items) {
-                        map.put(lastMongoId, (T) items.getItems().get(0));
+                .listener(new ItemWriteListener<JpaAuthor>() {
+                    public void afterWrite(Chunk<? extends JpaAuthor> items) {
+                        items.getItems().forEach(a -> cache.put(a.getMongoId(), (T) a));
                     }
                 })
                 .build();
     }
 
     @Bean
-    public Step transformAuthorStep(RepositoryItemReader<MongoAuthor> reader,
-                                    RepositoryItemWriter<JpaAuthor> writer,
-                                    ItemProcessor<MongoAuthor, JpaAuthor> itemProcessor
+    public Step transformGenreStep(RepositoryItemReader<MongoGenre> reader,
+                                   RepositoryItemWriter<JpaGenre> writer,
+                                   ItemProcessor<MongoGenre, JpaGenre> itemProcessor
     ) {
-        return new StepBuilder("transformAuthorStep", jobRepository)
-                .<MongoAuthor, JpaAuthor>chunk(1, platformTransactionManager)
+        return new StepBuilder("transformGenreStep", jobRepository)
+                .<MongoGenre, JpaGenre>chunk(CHUNK_SIZE, platformTransactionManager)
                 .reader(reader)
                 .processor(itemProcessor)
                 .writer(writer)
-                .listener(new ItemReadListener<>() {
-                    public void afterRead(@NonNull MongoAuthor o) {
-                        lastMongoId = o.getId();
-                    }
-                })
-                .listener(new ItemWriteListener<JpaAuthor>() {
-
-                    public void afterWrite(Chunk<? extends JpaAuthor> items) {
-                        map.put(lastMongoId, (T) items.getItems().get(0));
+                .listener(new ItemWriteListener<JpaGenre>() {
+                    public void afterWrite(Chunk<? extends JpaGenre> items) {
+                        items.getItems().forEach(g -> cache.put(g.getMongoId(), (T) g));
                     }
                 })
                 .build();
@@ -263,23 +246,17 @@ public class JobConfig<T> {
                                   ItemProcessor<MongoBook, JpaBook> itemProcessor
     ) {
         return new StepBuilder("transformBookStep", jobRepository)
-                .<MongoBook, JpaBook>chunk(1, platformTransactionManager)
+                .<MongoBook, JpaBook>chunk(CHUNK_SIZE, platformTransactionManager)
                 .reader(reader)
                 .processor(itemProcessor)
                 .writer(writer)
-                .listener(new ItemReadListener<>() {
-                    public void afterRead(@NonNull MongoBook o) {
-                        lastMongoId = o.getId();
-                    }
-                })
                 .listener(new ItemWriteListener<JpaBook>() {
                     public void afterWrite(Chunk<? extends JpaBook> items) {
-                        map.put(lastMongoId, (T) items.getItems().get(0));
+                        items.getItems().forEach(b -> cache.put(b.getMongoId(), (T) b));
                     }
                 })
                 .build();
     }
-
 
     @Bean
     public Step transformCommentStep(RepositoryItemReader<MongoComment> reader,

@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -26,4 +27,12 @@ public class JpaGenre {
 
     @Column(name = "name")
     private String name;
+
+    @Transient
+    private String mongoId;
+
+    public JpaGenre(long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }
