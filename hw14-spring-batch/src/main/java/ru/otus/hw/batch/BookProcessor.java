@@ -14,6 +14,7 @@ import ru.otus.hw.models.mongo.MongoBook;
 public class BookProcessor implements ItemProcessor<MongoBook, JpaBook> {
 
     private final BatchCache cache;
+
     @Override
     public JpaBook process(@Nonnull MongoBook item) throws Exception {
         JpaAuthor jpaAuthor = (JpaAuthor) cache.get(item.getAuthor().getId());
