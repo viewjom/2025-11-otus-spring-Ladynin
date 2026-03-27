@@ -62,6 +62,12 @@ public class JobConfig<T> {
 
     private final BatchCache cache;
 
+    private final BookProcessor bookProcessor;
+
+    private final AuthorProcessor authorProcessor;
+
+    private final GenreProcessor genreProcessor;
+
     @Autowired
     private JobRepository jobRepository;
 
@@ -123,37 +129,6 @@ public class JobConfig<T> {
         reader.setPageSize(CHUNK_SIZE);
         reader.setSort(sorts);
         return reader;
-    }
-
-    @Bean
-    public ItemProcessor<MongoAuthor, JpaAuthor> authorProcessor() {
-        return item -> {
-            return new JpaAuthor(0L, item.getFullName(), item.getId());
-        };
-    }
-
-    @Bean
-    public ItemProcessor<MongoGenre, JpaGenre> genreProcessor() {
-        return item -> {
-            return new JpaGenre(0L, item.getName(), item.getId());
-        };
-    }
-
-    @Bean
-    public ItemProcessor<MongoBook, JpaBook> bookProcessor() {
-        return item -> {
-            JpaAuthor jpaAuthor = (JpaAuthor) cache.get(item.getAuthor().getId());
-            JpaGenre jpaGenre = (JpaGenre) cache.get(item.getGenre().getId());
-            return new JpaBook(0l, item.getTitle(), jpaAuthor, jpaGenre, item.getId());
-        };
-    }
-
-    @Bean
-    public ItemProcessor<MongoComment, JpaComment> commentProcessor() {
-        return item -> {
-            JpaBook jpaBook = (JpaBook) cache.get(item.getBook().getId());
-            return new JpaComment(0l, item.getText(), jpaBook);
-        };
     }
 
     @Bean
@@ -242,13 +217,12 @@ public class JobConfig<T> {
 
     @Bean
     public Step transformBookStep(RepositoryItemReader<MongoBook> reader,
-                                  RepositoryItemWriter<JpaBook> writer,
-                                  ItemProcessor<MongoBook, JpaBook> itemProcessor
+                                  RepositoryItemWriter<JpaBook> writer
     ) {
         return new StepBuilder("transformBookStep", jobRepository)
                 .<MongoBook, JpaBook>chunk(CHUNK_SIZE, platformTransactionManager)
                 .reader(reader)
-                .processor(itemProcessor)
+                .processor(bookProcessor)
                 .writer(writer)
                 .listener(new ItemWriteListener<JpaBook>() {
                     public void afterWrite(Chunk<? extends JpaBook> items) {
