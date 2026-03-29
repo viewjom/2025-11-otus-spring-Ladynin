@@ -3,7 +3,7 @@ package ru.otus.hw.services;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.stereotype.Service;
-import ru.otus.hw.domain.Food;
+import ru.otus.hw.domain.Item;
 import ru.otus.hw.domain.OrderItem;
 
 import java.util.ArrayList;
@@ -15,12 +15,13 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class OrderServiceImpl implements OrderService {
-    private static final String[] MENU = {"coffee", "tea", "smoothie", "whiskey", "beer", "cola", "water"};
+    private static final String[] ITEM = {"scotch", "notebook", "coffee", "washing powder"
+            , "headphones", "paper", "scissors"};
 
-    private final CafeGateway cafe;
+    private final OrderGateway order;
 
-    public OrderServiceImpl(CafeGateway cafe) {
-        this.cafe = cafe;
+    public OrderServiceImpl(OrderGateway cafe) {
+        this.order = cafe;
     }
 
     @Override
@@ -33,9 +34,9 @@ public class OrderServiceImpl implements OrderService {
                 log.info("{}, New orderItems: {}", num,
                         items.stream().map(OrderItem::itemName)
                                 .collect(Collectors.joining(",")));
-                Collection<Food> food = cafe.process(items);
-                log.info("{}, Ready food: {}", num, food.stream()
-                        .map(Food::name)
+                Collection<Item> item = order.process(items);
+                log.info("{}, Ready item: {}", num, item.stream()
+                        .map(Item::name)
                         .collect(Collectors.joining(",")));
             });
             delay();
@@ -43,7 +44,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private static OrderItem generateOrderItem() {
-        return new OrderItem(MENU[RandomUtils.nextInt(0, MENU.length)]);
+        return new OrderItem(ITEM[RandomUtils.nextInt(0, ITEM.length)]);
     }
 
     private static Collection<OrderItem> generateOrderItems() {
