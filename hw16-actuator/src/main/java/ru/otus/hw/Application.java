@@ -11,6 +11,7 @@ public class Application {
         SpringApplication.run(Application.class, args);
         System.out.println("http://localhost:8080/datarest");
         System.out.println("http://localhost:8080/actuator");
+        System.out.println("http://localhost:8080/actuator/metrics");
         System.out.println("http://localhost:8080/actuator/logfile");
         System.out.println("http://localhost:8080/actuator/health");
         System.out.println("http://localhost:8080/author");

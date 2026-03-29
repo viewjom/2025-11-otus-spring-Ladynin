@@ -14,14 +14,16 @@ public class AuthorCheckActuator implements HealthIndicator {
 
     @Override
     public Health health() {
-        if (authorService.getErrorAuthors().size() == 0) {
+        int count = authorService.findErrorAuthors();
+        if (count == 0) {
             return Health.up()
                     .withDetail("message", "Есть книги всех авторов")
                     .build();
         } else {
             return Health.down()
-                    .withDetail("message", "Отсутствуют книги для авторов: "
-                            + authorService.getErrorAuthors())
+                    .withDetail("message", String.format("Отсутствуют книги для %d %s",
+                            count,
+                            count == 1 ? "автора" : "авторов"))
                     .build();
         }
     }

@@ -7,5 +7,5 @@ import java.util.List;
 public interface AuthorService {
     List<AuthorDto> findAll();
 
-    List<AuthorDto> getErrorAuthors();
+    int findErrorAuthors();
 }
