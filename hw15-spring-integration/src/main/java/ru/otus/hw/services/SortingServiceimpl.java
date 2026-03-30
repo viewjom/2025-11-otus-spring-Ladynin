@@ -12,7 +12,7 @@ public class SortingServiceimpl implements SortingService {
     @Override
     public Item sort(OrderItem orderItem) {
         log.info("Sorting {}", orderItem.itemName());
-           delay();
+        delay();
         log.info("Sorting {} done", orderItem.itemName());
         return new Item(orderItem.itemName());
     }
