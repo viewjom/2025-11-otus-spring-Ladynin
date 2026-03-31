@@ -12,9 +12,9 @@ import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.Transformers;
 import org.springframework.integration.file.dsl.Files;
 import org.springframework.messaging.MessageChannel;
-import ru.otus.hw.services.OrderService;
-import ru.otus.hw.services.PackageService;
+import ru.otus.hw.services.DispService;
 import ru.otus.hw.services.SortingService;
+import ru.otus.hw.services.CommissioningService;
 
 @Configuration
 public class IntegrationConfig {
@@ -35,7 +35,7 @@ public class IntegrationConfig {
     }
 
     @Bean
-    public IntegrationFlow fileReadingFlow(OrderService orderService) {
+    public IntegrationFlow fileReadingFlow(DispService orderService) {
         return IntegrationFlow
                 .from(Files.inboundAdapter(new File("C:/otus"))
                                 .patternFilter("*.txt"),
@@ -50,8 +50,8 @@ public class IntegrationConfig {
     }
 
     @Bean
-    public IntegrationFlow orderFlow(SortingService sortingService,
-                                     OrderService orderService) {
+    public IntegrationFlow orderFlow(CommissioningService sortingService,
+                                     DispService orderService) {
         return IntegrationFlow.from(fileInputChannel())
                 .handle(orderService, "findOrderItems")
                 .split()
@@ -62,7 +62,7 @@ public class IntegrationConfig {
     }
 
     @Bean
-    public IntegrationFlow packageFlow(PackageService packageService) {
+    public IntegrationFlow packageFlow(SortingService packageService) {
         return
                 IntegrationFlow.from(packageChannel())
                         .bridge(e -> e.poller(Pollers.fixedDelay(40000)))

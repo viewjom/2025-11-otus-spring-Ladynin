@@ -3,22 +3,22 @@ package ru.otus.hw.services;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.otus.hw.domain.OrderItem;
+import ru.otus.hw.domain.DispItem;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Service
 @Slf4j
-public class OrderServiceImpl implements OrderService {
+public class DispServiceImpl implements DispService {
 
-    public Collection<OrderItem> findOrderItems(String row) {
+    public Collection<DispItem> findOrderItems(String row) {
         String[] itemElements = row.split(";");
-        List<OrderItem> items = new ArrayList<>();
+        List<DispItem> items = new ArrayList<>();
         for (String i:itemElements) {
-            items.add(new OrderItem(i));
+            items.add(new DispItem(i));
         }
-        log.info("Order is being processed: {}", items.stream()
+        log.info("Disp is being processed: {}", items.stream()
                 .map(i -> i.itemName())
                 .collect(Collectors.joining(",")));
         delay();

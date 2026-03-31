@@ -5,18 +5,19 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.domain.Item;
-import ru.otus.hw.domain.Package;
+import ru.otus.hw.domain.Sort;
 
 @Service
 @Slf4j
-public class PackageServiceImpl implements PackageService {
+public class SortingServiceImpl implements SortingService {
 
     @Override
-    public Package pack(List<Item> items) {
+    public Sort pack(List<Item> items) {
         String list = items.stream().map(s -> s.name()).collect(Collectors.joining(", "));
-        log.info("Packing [{}]", list);
+        log.info("Sorting [{}]", list);
         delay();
-        return new Package(list);
+        log.info("Sorting [{}] done", list);
+        return new Sort(list);
     }
 
     private static void delay() {
