@@ -21,7 +21,7 @@ public class IntegrationConfig {
 
     @Bean
     public MessageChannelSpec<?, ?> packageChannel() {
-        return MessageChannels.queue("itemsChannel", 10);
+        return MessageChannels.queue("packageChannel", 10);
     }
 
     @Bean
@@ -37,15 +37,12 @@ public class IntegrationConfig {
     @Bean
     public IntegrationFlow fileReadingFlow(DispService orderService) {
         return IntegrationFlow
-                .from(Files.inboundAdapter(new File("C:/otus"))
-                                .patternFilter("*.txt"),
-                        e -> e.poller(Pollers.fixedDelay(10000))
-                )
+                .from(Files.inboundAdapter(new File("C:/otus")),
+                        e -> e.poller(Pollers.fixedDelay(10000)))
+                .filter(file -> ((File) file).getName().endsWith(".txt"))
                 .split(Files.splitter().charset(StandardCharsets.UTF_8))
                 .<String, String>transform(String::toUpperCase)
-                .route(File.class, file -> {
-                    return "fileInputChannel";
-                })
+                .channel("fileInputChannel")
                 .get();
     }
 
@@ -65,7 +62,6 @@ public class IntegrationConfig {
     public IntegrationFlow packageFlow(SortingService packageService) {
         return
                 IntegrationFlow.from(packageChannel())
-                        .bridge(e -> e.poller(Pollers.fixedDelay(40000)))
                         .handle(packageService, "pack")
                         .transform(Transformers.objectToString())
                         .channel(outChannel())
