@@ -1,0 +1,22 @@
+spring:
+  #datasource:
+   # url: jdbc:h2:mem:maindb
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 1
+  messages:
+    encoding: UTF-8
+  sql:
+    init:
+      mode: always
+      data-locations:
+    #    classpath: data.sql
+     # schema-locations:
+      #  classpath: schema.sql
+  jpa:
+    open-in-view: false
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    show-sql: true
