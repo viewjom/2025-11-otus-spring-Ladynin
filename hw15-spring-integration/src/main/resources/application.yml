@@ -2,3 +2,8 @@ logging:
   level:
     root: info
     org.spring.integration: debug
+app:
+  input:
+    delay: 10000
+    dir: hw15-spring-integration
+    file-suffix: .txt

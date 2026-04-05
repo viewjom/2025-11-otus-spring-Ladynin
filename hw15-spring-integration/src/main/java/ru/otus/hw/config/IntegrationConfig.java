@@ -2,6 +2,7 @@ package ru.otus.hw.config;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.channel.DirectChannel;
@@ -35,11 +36,14 @@ public class IntegrationConfig {
     }
 
     @Bean
-    public IntegrationFlow fileReadingFlow(DispService orderService) {
+    public IntegrationFlow fileReadingFlow(@Value("${app.input.delay}") long delay
+            ,@Value("${app.input.dir}") String inputDirName
+            , @Value("${app.input.file-suffix}") String inputFileSuffix) {
+        File dir = new File(inputDirName);
         return IntegrationFlow
-                .from(Files.inboundAdapter(new File("C:/otus")),
-                        e -> e.poller(Pollers.fixedDelay(10000)))
-                .filter(file -> ((File) file).getName().endsWith(".txt"))
+                .from(Files.inboundAdapter(dir),
+                        e -> e.poller(Pollers.fixedDelay(delay)))
+                .filter(file -> ((File) file).getName().endsWith(inputFileSuffix))
                 .split(Files.splitter().charset(StandardCharsets.UTF_8))
                 .<String, String>transform(String::toUpperCase)
                 .channel("fileInputChannel")
