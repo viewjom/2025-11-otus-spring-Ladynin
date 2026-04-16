@@ -1,0 +1,57 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:maindb
+  messages:
+    encoding: UTF-8
+  sql:
+    init:
+      mode: always
+      data-locations:
+        classpath: data.sql
+      schema-locations:
+        classpath: schema.sql
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "metrics, health, logfile"
+  health:
+    db:
+      enabled: false
+    diskSpace:
+      enabled: false
+    ping:
+      enabled: false
+    ssl:
+      enabled: false
+  endpoint:
+    health:
+      show-details: always
+logging:
+  level:
+    ROOT: INFO
+  file:
+    name: "hw18-log"
+data:
+  rest:
+    basePath: /datarest
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        register-health-indicator: true
+        slidingWindowSize: 3
+        permittedNumberOfCallsInHalfOpenState: 3
+        slowCallRateThreshold: 3
+        slowCallDurationThreshold: 1ms
+        failureRateThreshold: 3
+        waitDurationInOpenState: 2s
+        minimumNumberOfCalls: 3
