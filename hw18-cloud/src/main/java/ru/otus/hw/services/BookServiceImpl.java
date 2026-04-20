@@ -1,7 +1,6 @@
 package ru.otus.hw.services;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import java.util.Collections;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -78,11 +77,11 @@ public class BookServiceImpl implements BookService {
 
     public List<BookDto> getBookListFallback(Exception ex) {
         log.error("Book Fallback:" + ex.getMessage(), ex);
-        return Collections.singletonList(new BookDto(0L, "NULL", null, null));
+        return null;
     }
 
     public BookDto getBookFallback(Exception ex) {
         log.error(ex.getMessage(), ex);
-        return new BookDto(0L, "NULL", null, null);
+        return null;
     }
 }

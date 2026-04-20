@@ -1,7 +1,6 @@
 package ru.otus.hw.services;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import java.util.Collections;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +31,6 @@ public class GenreServiceImpl implements GenreService {
 
     public List<GenreDto> getGenreListFallback(Exception ex) {
         log.error("Author Fallback:" + ex.getMessage(), ex);
-        return Collections.singletonList(new GenreDto(0L, "NULL"));
+        return null;
     }
 }

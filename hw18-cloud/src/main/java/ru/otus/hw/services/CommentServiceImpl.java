@@ -85,6 +85,6 @@ public class CommentServiceImpl implements CommentService {
 
     public CommentDto getCommentFallback(Exception ex) {
         log.error(ex.getMessage(), ex);
-        return new CommentDto(0L, "NULL");
+        return null;
     }
 }
