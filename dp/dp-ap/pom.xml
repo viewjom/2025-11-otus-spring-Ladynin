@@ -6,19 +6,21 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.2</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <version>3.5.7</version>
+        <relativePath/>
     </parent>
-    <groupId>ru.otus.spring</groupId>
-    <artifactId>dproject</artifactId>
+    <groupId>ru.otus.dp</groupId>
+    <artifactId>dp-ap</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>hw15-spring-integration</name>
+    <name>dp-ap</name>
     <properties>
         <checkstyle-plugin.version>3.3.1</checkstyle-plugin.version>
         <checkstyle.version>10.15.0</checkstyle.version>
         <checkstyle.config.url>
             https://raw.githubusercontent.com/OtusTeam/Spring/master/checkstyle.xml
         </checkstyle.config.url>
+        <integration.version>7.0.4</integration.version>
+        <spring.shell.version>3.4.0</spring.shell.version>
     </properties>
     <dependencies>
         <dependency>
@@ -29,18 +31,52 @@
         <dependency>
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-file</artifactId>
-            <version>7.0.4</version>
+            <version>${integration.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-ip</artifactId>
-            <version>7.0.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-core</artifactId>
+            <!-- <version>${integration.version}</version>-->
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.shell</groupId>
+            <artifactId>spring-shell-starter</artifactId>
+            <version>${spring.shell.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-messaging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-messaging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-messaging</artifactId>
         </dependency>
     </dependencies>
 
@@ -74,5 +110,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

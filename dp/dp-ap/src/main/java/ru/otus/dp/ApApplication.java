@@ -1,12 +1,11 @@
-package ru.otus.hw;
+package ru.otus.dp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Application {
-
+public class ApApplication {
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(ApApplication.class, args);
     }
 }

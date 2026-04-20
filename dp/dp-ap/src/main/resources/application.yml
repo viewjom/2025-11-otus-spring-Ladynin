@@ -1,0 +1,12 @@
+app:
+  input:
+    delay: 100000
+    extension: .csv
+    format-date: yyyyMMddHHmmss
+    dir:
+      in: dp/dp-ap/csv/in
+      out: dp/dp-ap/csv/out
+      #in: C:/otus/in
+      #out: C:/otus/out
+  tcp:
+    port: 9001
