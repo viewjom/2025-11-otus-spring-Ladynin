@@ -1,0 +1,335 @@
+
+    .btn {
+    display: inline-block;
+    box-sizing: border-box;
+    padding: 1px;
+    margin: 0 15px 15px 0;
+    outline: none;
+    border: 1px solid #F18230;
+    border-radius: 25px;
+    height: 46px;
+    line-height: 0;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    color: #fff;
+    background-color: #fff;
+    position: relative;
+    overflow: hidden;
+    vertical-align: top;
+    cursor: pointer;
+    user-select: none;
+    appearance: none;
+    touch-action: manipulation;
+}
+
+.btn span {
+    display: block;
+    box-sizing: border-box;
+    padding: 0 25px;
+    height: 42px;
+    line-height: 38px;
+    border: 1px solid #F18230;
+    border-radius: 25px;
+    font-size: 14px;
+    color: #FFFFFF;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 100%), #F18230;
+    text-align: center;
+    font-weight: 600;
+}
+
+    .btn span {
+        display: block;
+        box-sizing: border-box;
+        padding: 0 25px;
+        height: 42px;
+        line-height: 38px;
+        border: 1px solid #F18230;
+        border-radius: 25px;
+        font-size: 14px;
+        color: #FFFFFF;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 100%), #F18230;
+        text-align: center;
+        font-weight: 600;
+    }
+    .lang {
+        border: none;
+        color: #FFFFFF;
+        background: #FFFFFF;
+        text-align: right;
+        vertical-align: top;
+     }
+
+
+.btn:focus-visible {
+    box-shadow: 0 0 0 3px lightskyblue;
+}
+
+.btn:hover span {
+    background-color: #fba768
+}
+
+.btn:active span {
+    background-color: #c17237 !important;
+}
+
+.btn:disabled {
+    opacity: 0.65;
+    pointer-events: none;
+}
+
+/*           */
+.table {
+    width: 100%;
+    border: none;
+}
+
+.table thead th {
+    font-weight: bold;
+    text-align: left;
+    border: none;
+    padding: 10px 15px;
+    background: #d8d8d8;
+    font-size: 14px;
+}
+
+.table thead tr th:first-child {
+    border-radius: 8px 0 0 8px;
+}
+
+.table thead tr th:last-child {
+    border-radius: 0 8px 8px 0;
+}
+
+.table tbody td {
+    text-align: left;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    vertical-align: top;
+}
+
+.table tbody tr:nth-child(even) {
+    background: #f3f3f3;
+}
+
+.table tbody tr td:first-child {
+    border-radius: 8px 0 0 8px;
+}
+
+.table tbody tr td:last-child {
+    border-radius: 0 8px 8px 0;
+}
+
+    .pag {
+        width: 100%;
+
+    }
+    .pag td  {
+        text-align: left;
+        padding: 10px 15px;
+        font-size: 14px;
+        background: #FFFFFF;
+    }
+
+
+/*----------*/
+.paginationInfo {
+    width: 30px;
+    /* Убираем влияние padding и border на конечную ширину input */
+    box-sizing: border-box;
+    /* Обнуляем margin */
+    margin: 0;
+
+    pointer-events: none;
+    margin-top: 10px;
+}
+
+.disabled {
+    pointer-events: none; /* делаем элемент неактивным для взаимодействия */
+    cursor: default; /*  курсор в виде стрелки */
+    color: #888; /* цвет текста серый */
+}
+
+a.auto {
+    pointer-events: auto;
+}
+
+h3.right {
+    text-align: right
+}
+a.right {
+    position: absolute;
+    right: 5px;
+}
+    a.right100 {
+        font-size: 32px;
+        position: absolute;
+        right: 100px;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    a.right_link {
+        font-size: 32px;
+        position: absolute;
+        top: 25px;
+        right: 100px;
+        position: fixed;
+        transform: translate(-50%, -50%);
+    }
+
+    .button {
+        display: inline-flex;
+        height: 40px;
+        width: 150px;
+        border: 2px solid #BFC0C0;
+        margin: 20px 20px 20px 20px;
+        color: #BFC0C0;
+        text-transform: uppercase;
+        text-decoration: none;
+        font-size: .8em;
+        letter-spacing: 1.5px;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    #button-3 {
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    #button-3 a {
+        position: relative;
+        transition: all .45s ease-Out;
+    }
+
+    #circle {
+        width: 0%;
+        height: 0%;
+        opacity: 0;
+        line-height: 40px;
+        border-radius: 50%;
+        background: #BFC0C0;
+        position: absolute;
+        transition: all .5s ease-Out;
+        top: 20px;
+        left: 70px;
+    }
+
+    #button-3:hover #circle {
+        width: 200%;
+        height: 500%;
+        opacity: 1;
+        top: -70px;
+        left: -70px;
+    }
+
+    #button-3:hover a {
+        color: #2D3142;
+    }
+span.right {
+    position: absolute;
+    right: 50px;
+}
+
+/* styles.css */
+#preloader {
+
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #cccccc;
+    border-top-color: #1a1a1a;
+
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.search {
+    margin-left: 0px;
+    width: 96px;
+    border: 1px solid #000;
+    min-height: 16px;
+}
+/*
+input[type="search"] {
+
+    border: none;
+    outline: none;
+    -webkit-appearance: none;
+    width: 70px;
+    vertical-align: middle;
+}
+
+ */
+input[id="pageNumber"] {
+
+    border: none;
+    outline: none;
+    -webkit-appearance: none;
+    width: 70px;
+    vertical-align: middle;
+}
+
+
+input[type="submit"] {
+
+    width: 16px;
+    height: 16px;
+    border: none;
+    background: url(/static/nav_right_blue.png) no-repeat 50% 50%;
+    vertical-align: middle;
+}
+
+    .tabs {
+        max-width: 600px;
+        width: 100%;
+        margin: 50px auto;
+    }
+
+    .tabs__nav {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 40px;
+    }
+
+    .tabs__button {
+        cursor: pointer;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,.5);
+    }
+
+    .tabs__button._active {
+        color: red;
+    }
+
+    .tabs__item:not(._active) {
+        display: none;
+    }

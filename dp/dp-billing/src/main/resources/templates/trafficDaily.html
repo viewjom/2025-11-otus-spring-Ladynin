@@ -1,0 +1,66 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit person</title>
+    <link rel="stylesheet" href="/dp2.css">
+</head>
+<body>
+<script>
+    function showTrafficDaily(contractId) {
+        const tbody = document.querySelector('#tableTrafficDaily tbody');
+        fetch("api/trafficDaily/contract/" + contractId)
+            .then(res => res.json())
+            .then((data) => {
+                data.forEach(({cdate, service, telephoneNumber, bnumber, duration, amount}) => {
+                    let row = tbody.insertRow();
+                    let cellCdate = row.insertCell();
+                    cellCdate.textContent = cdate;
+                    cellService = row.insertCell();
+                    cellService.textContent = service.name + " (" + telephoneNumber.tariffPlan.name + ")";
+                    let cellAnumber = row.insertCell();
+                    cellAnumber.textContent = telephoneNumber.number;
+                    let cellBnumber = row.insertCell();
+                    cellBnumber.textContent = bnumber;
+                    let cellDuration = row.insertCell();
+                    cellDuration.textContent = duration;
+                    let cellAmount = row.insertCell();
+                    cellAmount.textContent = amount;
+                });
+            })
+    }
+
+    window.onload = function () {
+        const url = new URL(window.location);
+        const contractId = url.searchParams.get('contractId');
+        if (contractId.toString() != "") {
+            showTrafficDaily(contractId);
+            document.getElementById("backBtn").innerHTML = '<a href=/contractEdit?id=' + contractId + '><button class="btn" type="button"><span>Back</span></button></a>';
+        }
+    }
+</script>
+<form>
+    <div class="form-container">
+        <div class="form-left">
+            <div class="row-edit">
+                <p id="tariff-p"></p>
+            </div>
+            <table id="tableTrafficDaily" class="table">
+                <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Услуга</th>
+                    <th>АНомор</th>
+                    <th>БНомор</th>
+                    <th>Продолжительность</th>
+                    <th>Стоимость</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div id="backBtn">
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+</html>

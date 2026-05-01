@@ -22,6 +22,7 @@ import ru.otus.dp.services.FileServiceImpl;
 public class IntegrationConfig {
 
     private @Value("${app.tcp.port}") int port;
+
     private String cdrRow;
 
     @Bean
@@ -63,9 +64,9 @@ public class IntegrationConfig {
     @Bean
     public IntegrationFlow fileProcessFlow(CdrService cdrService,
                                            FileServiceImpl fileService,
-                                           @Value("${app.input.dir.in}") String inputDirName,
-                                           @Value("${app.input.delay}") long delay,
-                                           @Value("${app.input.extension}") String extension) {
+                                           @Value("${app.client.dir.in}") String inputDirName,
+                                           @Value("${app.client.delay}") long delay,
+                                           @Value("${app.client.extension}") String extension) {
         File dir = new File(inputDirName);
 
         return IntegrationFlow

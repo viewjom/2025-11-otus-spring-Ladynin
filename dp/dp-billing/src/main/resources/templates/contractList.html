@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8"/>
+    <title>List of all Contracts</title>
+    <link rel="stylesheet" href="/dp2.css">
+</head>
+<body>
+<h3 id="pageTitle" class="centered-title">Список договоров</h3>
+<div th:if="${roleAdmin}">
+    <a href=/contractAdd>Add new</a>
+</div>
+<table id='contractTable' class="table">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Номер Договора</th>
+        <th>Наименование</th>
+        <th>Адрес</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    function fillTable() {
+        const tbody = document.querySelector('#contractTable tbody');
+        const temp = '';
+        fetch('/api/contracts')
+            .then(res => res.json())
+            .then(
+                data => {
+                    data.forEach(({id, contractNumber, name, address}) => {
+                        let row = tbody.insertRow();
+                        let cellId = row.insertCell();
+                        cellId.textContent = id;
+                        let cellContractNumber = row.insertCell();
+                        cellContractNumber.textContent = contractNumber;
+                        let cellName = row.insertCell();
+                        cellName.textContent = name;
+                        let cellAddress = row.insertCell();
+                        cellAddress.textContent = address;
+                        let cellBtnOpen = row.insertCell();
+                        cellBtnOpen.innerHTML = '<a href=/contractEdit?id=' + id + '>' +
+                            '<button type="button" class="btn"><span>Open</span></button></a>';
+                    })
+
+                })
+
+    }
+
+    window.addEventListener('load', fillTable)
+</script>
+</body>
+</html>

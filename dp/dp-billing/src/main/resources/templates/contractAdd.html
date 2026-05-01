@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit person</title>
+    <link rel="stylesheet" href="/dp2.css">
+</head>
+<body>
+
+<script>
+    function saveContract() {
+        const contractNumberInput = document.getElementById("contractNumber-input")
+        /*
+        if (contractNumberInput.value === "") {
+            alert("Заполните Номер договора");
+            return;
+        }*/
+        const nameInput = document.getElementById("name-input")
+        /*
+        if (nameInput.value === "") {
+            alert("Заполните Наименование");
+            return;
+        }
+        */
+        const addressInput = document.getElementById("address-input")
+        /*
+        if (addressInput.value === "") {
+            alert("Заполните адрес");
+            return;
+        }
+
+         */
+        const contract = {
+            id: 0,
+            contractNumber: contractNumberInput.value,
+            name: nameInput.value,
+            address: addressInput.value
+        };
+        fetch("/api/contracts", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(contract)
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/contracts'
+                    return;
+                }
+                return response.json().then(err => {
+                    throw err;
+                });
+            })
+            .catch(error => {
+                    if (error.contractNumber != null) {
+                        alert(error.contractNumber);
+                        return;
+                    }
+                    if (error.name != null) {
+                        alert(error.name);
+                        return;
+                    }
+                    if (error.address != null) {
+                        alert(error.address);
+                        return;
+                    }
+                }
+            );
+    }
+
+    function deleteBook(idContract) {
+        fetch("api/contracts/" + idContract, {
+            method: 'DELETE',
+        }).then(() => {
+            window.location.reload()
+        })
+    }
+</script>
+
+<div class="row-add">
+    <form id="edit-form" action="contractAdd.html" method="post">
+        <h3 style="text-align: center;">Новый договор</h3>
+        <div class="row-add">
+            <label for="contractNumber-input">Номер договора:</label>
+            <input id="contractNumber-input" name="contractNumber" type="text"/>
+        </div>
+        <div class="row-add">
+            <label for="name-input">Наименование:</label>
+            <input id="name-input" name="name" type="text"/>
+        </div>
+        <div class="row-add">
+            <label for="address-input">Адрес:</label>
+            <input id="address-input" name="address" type="text"/>
+        </div>
+        <div class="row-add">
+            <button type="button" onclick="saveContract()">Save</button>
+            <a href="/">
+                <button type="button">Back</button>
+            </a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

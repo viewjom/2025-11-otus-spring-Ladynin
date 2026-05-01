@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit person</title>
+    <link rel="stylesheet" href="/dp2.css">
+</head>
+<body>
+
+<script>
+    const url = new URL(window.location);
+    const contractId = url.searchParams.get('contractId');
+
+    function saveTel() {
+        const tellNumberInput = document.getElementById("tellNumber-input")
+        const tariffPlanSelect = document.getElementById("tariffPlan-select")
+        const tell = {id: 0, tariffPlan: {id: tariffPlanSelect.value}, number: tellNumberInput.value, contractId};
+        fetch("/api/tels", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(tell)
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/contractEdit?id=' + contractId;
+                    return;
+                }
+                return response.json().then(err => {
+                    throw err;
+                });
+            })
+            .catch(error => alert(error.number));
+    }
+
+    window.onload = function () {
+        const url = new URL(window.location);
+        const contractId = url.searchParams.get('contractId');
+        if (contractId.toString() != "") {
+            document.getElementById("backBtn").innerHTML = '<a href=/contractEdit?id=' + contractId + '><button class="btn" type="button"><span>Back</span></button></a>';
+        }
+    }
+
+</script>
+<div class="row-add">
+    <form id="edit-form" action="telephoneNumberAdd.html" method="post">
+        <h3 style="text-align: center;">Новый телефонный номер</h3>
+        <div class="row-add">
+            <label for="tariffPlan-select">Тарифный план:</label>
+            <select id="tariffPlan-select">
+                <option th:each="tariffPlan : ${tariffPlans}" th:value="${tariffPlan.id}" th:text="${tariffPlan.name}"/>
+            </select>
+        </div>
+        <div class="row-add">
+            <label for="tellNumber-input">Номер телефона:</label>
+            <input id="tellNumber-input" name="tellNumber" type="text"/>
+        </div>
+        <div class="row-add">
+            <div class="container">
+                <div>
+                    <button class="btn" type="button" onclick="saveTel()">Save</button>
+                </div>
+                <div id="backBtn"></div>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

@@ -1,6 +1,6 @@
 app:
-  input:
-    delay: 100000
+  client:
+    delay: 10000
     extension: .csv
     format-date: yyyyMMddHHmmss
     dir:

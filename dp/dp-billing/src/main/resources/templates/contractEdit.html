@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit person</title>
+    <link rel="stylesheet" href="/dp2.css">
+</head>
+<body>
+
+<script>
+    function saveContract() {
+        const contractId = document.getElementById("id-input")
+        const contractNumberInput = document.getElementById("contractNumber-input")
+        const nameInput = document.getElementById("name-input")
+        const addressInput = document.getElementById("address-input")
+        const contract = {
+            id: contractId.value,
+            contractNumber: contractNumberInput.value,
+            name: nameInput.value,
+            address: addressInput.value,
+            telephoneNumber: null
+        };
+
+        fetch("/api/contracts", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(contract)
+
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/contracts'
+                    return;
+                }
+                return response.json().then(err => {
+                    throw err;
+                });
+            })
+            .catch(error => {
+                    if (error.contractNumber != null) {
+                        alert(error.contractNumber);
+                        return;
+                    }
+                    if (error.name != null) {
+                        alert(error.name);
+                        return;
+                    }
+                    if (error.address != null) {
+                        alert(error.address);
+                        return;
+                    }
+                }
+            );
+    }
+
+    function editContract(contractId) {
+        const tbody = document.querySelector('#tableTelephone tbody');
+        fetch("/api/contracts/" + contractId)
+            .then(res => res.json())
+            .then((data) => {
+                document.getElementById("id-input").value = data.id;
+                document.getElementById("contractNumber-input").value = data.contractNumber;
+                document.getElementById("name-input").value = data.name;
+                document.getElementById("address-input").value = data.address;
+                data.telephoneNumber.forEach(({id, number, tariffPlan}) => {
+                    let row = tbody.insertRow();
+                    let cellId = row.insertCell();
+                    cellId.textContent = id;
+                    let cellName = row.insertCell();
+                    cellName.innerHTML = '<a href=/telephoneNumberEdit?telNumId=' + id + '&contractId=' +
+                        contractId + '>' + number + '</a>';
+                    let cellTariffPlan = row.insertCell();
+                    cellTariffPlan.innerHTML = '<a href=/tariffList?tariffId=' + tariffPlan.id + '&contractId=' + contractId + '>' + tariffPlan.name + '</a>';
+                });
+                document.getElementById("addBtn").innerHTML = '<a href=/telephoneNumberAdd?contractId=' + contractId + '>' +
+                    '<button class="btn" type="button"><span>Add</span></button></a>'
+                document.getElementById("finInfo").innerHTML = '<a href=/trafficDaily?contractId=' + contractId + '><h3>Финансовая информация</h3></a>';
+            })
+    }
+
+    function deleteBook(contractId) {
+        fetch("api/contracts/" + contractId, {
+            method: 'DELETE',
+        }).then(() => {
+            window.location.reload()
+        })
+    }
+
+    window.onload = function () {
+        const url = new URL(window.location);
+        const contractId = url.searchParams.get('id');
+        if (contractId.toString() != "") {
+            editContract(contractId)
+        }
+    }
+</script>
+<form>
+    <div class="form-container">
+        <!-- Левая колонка -->
+        <div class="form-left">
+            <div class="container2">
+                <div><h3>Подключения      </h3></div>
+                <div id="finInfo" class="info-right"></div>
+            </div>
+            <table id="tableTelephone" class="table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Номер телефона</th>
+                    <th>Тарифный план</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div id="addBtn" class="container" th:if="${roleAdmin}">
+            </div>
+        </div>
+        <div class="form-right">
+            <form id="edit-form" action="contractEdit.html" method="post">
+                <h3>Договор</h3>
+                <div hidden>
+                    <input id="id-input" type="text" readonly="readonly" value="0"/>
+                </div>
+                <div class="row-edit">
+                    <label for="contractNumber-input">Номер договора:</label>
+                    <input th:readonly="${!roleAdmin}" id="contractNumber-input" name="contractNumber" type="text"/>
+                </div>
+                <div class="row-edit">
+                    <label for="name-input">Наименование:</label>
+                    <input th:readonly="${!roleAdmin}" id="name-input" name="name" type="text"/>
+                </div>
+                <div class="row-editadd">
+                    <label for="address-input">Адрес:</label>
+                    <input th:readonly="${!roleAdmin}" id="address-input" name="address" type="text"/>
+                </div>
+                <div class="container">
+                    <div>
+                        <button class="btn" th:if="${roleAdmin}" type="button" onclick="saveContract()">Save
+                        </button>
+                    </div>
+                    <div>
+                        <a href="/">
+                            <button class="btn" type="button">Back</button>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</form>
+</body>
+</html>

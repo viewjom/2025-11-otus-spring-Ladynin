@@ -1,0 +1,65 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit person</title>
+    <link rel="stylesheet" href="/dp2.css">
+</head>
+<body>
+<script>
+    function editContract(tariffId) {
+        const tbody = document.querySelector('#tableCost tbody');
+        fetch("/api/tariffs/" + tariffId)
+            .then(res => res.json())
+            .then((data) => {
+                let p = document.getElementById('tariff-p');
+                p.textContent += 'Тарифный план: ' + data.name;
+                data.costs.forEach(({id, service, tpt, cost}) => {
+                    let row = tbody.insertRow();
+                    let cellId = row.insertCell();
+                    cellId.textContent = id;
+                    let serviceId = row.insertCell();
+                    serviceId.textContent = service.name;
+                    let cellTpt = row.insertCell();
+                    cellTpt.textContent = tpt;
+                    let cellCost = row.insertCell();
+                    cellCost.textContent = cost;
+                });
+            })
+    }
+
+    window.onload = function () {
+        const url = new URL(window.location);
+        const tariffId = url.searchParams.get('tariffId');
+        const contractId = url.searchParams.get('contractId');
+        if (tariffId.toString() != "") {
+            editContract(tariffId)
+        }
+        if (contractId.toString() != "") {
+            document.getElementById("backBtn").innerHTML = '<a href=/contractEdit?id=' + contractId + '><button class="btn" type="button"><span>Back</span></button></a>';
+        }
+    }
+</script>
+<form>
+    <div class="form-container">
+        <div class="form-left">
+            <div class="row-edit">
+                <p id="tariff-p"></p>
+            </div>
+            <table id="tableCost" class="table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Услуга</th>
+                    <th>TPT</th>
+                    <th>Цена</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div id="backBtn">
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+</html>

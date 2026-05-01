@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:maindb
+    #url: jdbc:postgresql:/ /localhost:5432/main
+    #username: postgres
+    #password: 1
+  #liquibase:
+   # change-log: classpath:db/changelog/db.changelog-master.xml
+  messages:
+    encoding: UTF-8
+  sql:
+    init:
+      mode: always
+      data-locations:
+        classpath: data.sql
+      schema-locations:
+        classpath: schema.sql
+  jpa:
+    #generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+  mvc:
+    static-path-pattern=/static/**:
+app:
+  server:
+    separator: ;
+    format-date: yyyyMMddHHmmss
+    port: 9001
+

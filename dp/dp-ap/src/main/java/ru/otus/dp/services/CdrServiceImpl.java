@@ -2,7 +2,6 @@ package ru.otus.dp.services;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.otus.dp.domain.Cdr;
@@ -11,7 +10,7 @@ import java.util.Date;
 @Service
 public class CdrServiceImpl implements CdrService {
 
-    @Value("${app.input.format-date}")
+    @Value("${app.client.format-date}")
     private String formatDate ;
 
     @Override

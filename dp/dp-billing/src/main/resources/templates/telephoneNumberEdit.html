@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit person</title>
+    <link rel="stylesheet" href="/dp2.css">
+</head>
+<body>
+
+<script>
+    const url = new URL(window.location);
+    const contractId = url.searchParams.get('contractId');
+    const tellId = url.searchParams.get('telNumId');
+
+    function saveTel() {
+        const tellNumberId = document.getElementById("id-input")
+        const tellNumberInput = document.getElementById("tellNumber-input")
+        if (tellNumberInput.value === "") {
+            alert("Заполните Номер телефона");
+            return;
+        }
+
+        const tariffPlanSelect = document.getElementById("tariffPlan-select")
+        const tell = {
+            id: tellNumberId.value,
+            tariffPlan: {id: tariffPlanSelect.value},
+            number: tellNumberInput.value,
+            contractId
+        };
+        fetch("/api/tels", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(tell)
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/contractEdit?id=' + contractId;
+                    return;
+                }
+                return response.json().then(err => {
+                    throw err;
+                });
+            })
+            .catch(error => alert(error.number));
+    }
+
+    function editTel(contractId, telId) {
+        const tbody = document.querySelector('#tableTelephone tbody');
+        fetch("/api/tels/" + telId)
+            .then(res => res.json())
+            .then((data) => {
+                document.getElementById("id-input").value = data.id;
+                document.getElementById("tariffPlan-select").value = data.tariffPlan.id;
+                document.getElementById("tellNumber-input").value = data.number;
+            })
+    }
+
+    function deleteTel() {
+        fetch("api/tels/" + tellId, {
+            method: 'DELETE',
+        }).then(() => {
+            window.location.href = '/contractEdit?id=' + contractId;
+        })
+    }
+
+    window.onload = function () {
+        //     const url = new URL(window.location);
+        //     const tellId = url.searchParams.get('telNumId');
+        //     const contractId = url.searchParams.get('contractId');
+        if (tellId.toString() != "") {
+            editTel(contractId, tellId);
+        }
+        if (contractId.toString() != "") {
+            document.getElementById("backBtn").innerHTML = '<a href=/contractEdit?id=' + contractId + '><button class="btn" type="button"><span>Back</span></button></a>';
+        }
+    }
+</script>
+<div class="row-add">
+    <form id="edit-form" action="telephoneNumberAdd.html" method="post">
+        <h3 style="text-align: center;">Телефонный номер</h3>
+        <div hidden>
+            <input id="id-input" type="text" readonly="readonly" value="0"/>
+        </div>
+        <div class="row-add">
+            <label for="tariffPlan-select">Тарифный план:</label>
+            <select id="tariffPlan-select">
+                <option th:each="tariffPlan : ${tariffPlans}" th:value="${tariffPlan.id}" th:text="${tariffPlan.name}"/>
+            </select>
+        </div>
+        <div class="row-add">
+            <label for="tellNumber-input">Номер телефона:</label>
+            <input id="tellNumber-input" name="tellNumber" type="text"/>
+        </div>
+        <div class="row-add">
+            <div class="container">
+                <div>
+                    <button class="btn" type="button" onclick="saveTel()">Save</button>
+                </div>
+                <div>
+                    <button class="btn" type="button" onclick="deleteTel()">Delete</button>
+                </div>
+                <div id="backBtn"></div>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

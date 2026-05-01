@@ -10,5 +10,6 @@
 
     <modules>
         <module>dp-ap</module>
+        <module>dp-billing</module>
     </modules>
 </project>

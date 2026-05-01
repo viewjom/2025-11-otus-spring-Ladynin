@@ -20,7 +20,6 @@
             https://raw.githubusercontent.com/OtusTeam/Spring/master/checkstyle.xml
         </checkstyle.config.url>
         <integration.version>7.0.4</integration.version>
-        <spring.shell.version>3.4.0</spring.shell.version>
     </properties>
     <dependencies>
         <dependency>
@@ -42,7 +41,6 @@
         <dependency>
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-core</artifactId>
-            <!-- <version>${integration.version}</version>-->
         </dependency>
 
         <dependency>
@@ -53,12 +51,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.shell</groupId>
-            <artifactId>spring-shell-starter</artifactId>
-            <version>${spring.shell.version}</version>
         </dependency>
 
         <dependency>

@@ -15,11 +15,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
 
-    private @Value("${app.input.dir.in}") String inputDirName;
+    private @Value("${app.client.dir.in}") String inputDirName;
 
-    private @Value("${app.input.dir.out}") String outputDirName;
+    private @Value("${app.client.dir.out}") String outputDirName;
 
-    private @Value("${app.input.extension}") String extension;
+    private @Value("${app.client.extension}") String extension;
 
     @Override
     public void move(MessageHeaders messageHeaders, String reply, String cdrRow) {
